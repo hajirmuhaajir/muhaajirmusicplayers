@@ -3,318 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muhaajir Music Players</title>
+    <title>muhaajir music players · arsip suara</title>
     <style>
         :root {
-            --bg: #080808;
-            --card: #121212;
-            --accent: #00d2ff;
-            --text: #ffffff;
-            --text-dim: #666666;
-            --border: #222222;
+            --bg: #0a0a0a;
+            --panel: #141414;
+            --accent: #2dd4bf;
+            --text-main: #f8fafc;
+            --text-dim: #64748b;
+            --border: #262626;
         }
 
+        * { box-sizing: border-box; transition: all 0.2s ease; }
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
+            padding: 20px 10px;
         }
 
-        .player-wrapper {
-            width: 100%;
-            max-width: 420px;
-            background: var(--card);
-            border-radius: 24px;
+        .master-container {
+            display: flex;
+            width: 960px;
+            max-width: 96vw;
+            height: 580px;
+            background: var(--panel);
             border: 1px solid var(--border);
+            border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            margin-bottom: 16px;
         }
 
-        .loading { opacity: 0.5; pointer-events: none; }
-
-        /* Display Section */
-        .display-section {
-            padding: 50px 20px 30px;
-            text-align: center;
-            position: relative;
-            background: linear-gradient(to bottom, #1a1a1a, var(--card));
+        /* PANEL KIRI — RESONANSI */
+        .resonance-chamber {
+            flex: 1.2;
+            padding: 40px 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--border);
         }
 
-        #visualizer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            opacity: 0.4;
+        .album-breadcrumb { font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; font-weight: 800; }
+        .song-title-large { font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin: 12px 0 8px; letter-spacing: -1.5px; word-break: break-word; }
+        .meta-row { font-size: 0.65rem; color: var(--text-dim); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .lyrics-fragment { margin-top: 25px; font-size: 0.8rem; color: var(--text-dim); border-left: 2px solid var(--accent); padding-left: 15px; min-height: 2rem; font-style: italic; }
+
+        /* PROGRESS BAR */
+        .progress-container { width: 100%; height: 4px; background: #222; cursor: pointer; margin-bottom: 6px; margin-top: auto; border-radius: 2px; }
+        #progress-fill { height: 100%; background: var(--accent); width: 0%; position: relative; border-radius: 2px; }
+        .time-labels { display: flex; justify-content: space-between; font-size: 0.6rem; font-family: monospace; color: var(--text-dim); }
+
+        /* GROUPED CONTROLS (Navigasi + Volume) */
+        .controls-wrapper {
+            margin-top: 25px;
+            background: rgba(255,255,255,0.02);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
         }
 
-        .meta-info { position: relative; z-index: 5; }
-        .meta-info h1 { font-size: 1.3rem; margin: 0; letter-spacing: -0.5px; }
-        .meta-info p { font-size: 0.7rem; color: var(--accent); margin: 5px 0; text-transform: uppercase; font-weight: 700; }
-        
-        .badge-container { margin: 10px 0; }
-        .badge { 
-            font-size: 0.6rem; 
-            padding: 3px 10px; 
-            border: 1px solid var(--accent); 
-            border-radius: 4px; 
-            color: var(--accent); 
-            font-weight: bold;
-            display: inline-block;
+        .controls-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .btn-core { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem; }
+        .btn-core.active { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
+        .btn-core:hover { color: var(--text-main); }
+
+        .play-pause-circle {
+            width: 60px; height: 60px; background: var(--text-main); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
+        .play-pause-circle:hover { transform: scale(1.05); background: var(--accent); }
+        .play-pause-circle svg { width: 24px; height: 24px; fill: var(--bg); }
 
-        .lyrics-mini {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            margin-top: 10px;
-            font-style: italic;
-            height: 18px;
+        /* VOLUME SLIDER (Sekarang di bawah Navigasi) */
+        .volume-integrated {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
-
-        /* Controls Section */
-        .controls-section { padding: 25px; background: var(--card); border-top: 1px solid var(--border); }
-        
-        .time-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.7rem; color: var(--text-dim); font-family: monospace; }
-
-        .progress-bar {
-            width: 100%; height: 5px; background: #222; border-radius: 3px;
-            margin-bottom: 25px; position: relative; cursor: pointer;
-        }
-        #progress-fill { height: 100%; background: var(--accent); width: 0%; border-radius: 3px; }
-
-        .nav-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-
-        .ctrl-btn { background: none; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; transition: 0.2s; }
-        .ctrl-btn:hover { color: var(--text); }
-        .ctrl-btn.active { color: var(--accent); }
-
-        .play-btn {
-            width: 55px; height: 55px;
-            background-color: var(--text);
-            background-size: 40%;
-            background-repeat: no-repeat;
-            background-position: center;
-            border-radius: 50%;
-            border: none;
+        .volume-integrated span { font-size: 0.6rem; font-weight: 900; color: var(--text-dim); }
+        .volume-integrated input[type=range] {
+            flex-grow: 1;
+            height: 2px;
+            -webkit-appearance: none;
+            background: #333;
+            accent-color: var(--accent);
             cursor: pointer;
         }
-        .state-play { background-image: url('https://i.postimg.cc/13j2rbt8/play.png'); }
-        .state-pause { background-image: url('https://i.postimg.cc/J0L9BJhD/pause.png'); }
 
-        .volume-control { display: flex; align-items: center; gap: 12px; }
-        .volume-control input { flex-grow: 1; accent-color: var(--accent); height: 3px; cursor: pointer; }
+        /* PANEL KANAN */
+        .tape-rack { flex: 0.8; background: #0d0d0d; display: flex; flex-direction: column; }
+        .rack-header { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.65rem; font-weight: 900; color: var(--text-dim); letter-spacing: 1px; }
+        .playlist-scroll { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .group-label { padding: 15px 10px 5px; font-size: 0.6rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
+        .track-item { display: flex; align-items: center; padding: 12px 10px; cursor: pointer; border-radius: 2px; }
+        .track-item:hover { background: #1a1a1a; }
+        .track-item.active { background: #1e1e1e; border-left: 3px solid var(--accent); color: var(--accent); }
+        .t-num { font-size: 0.65rem; color: var(--text-dim); width: 25px; font-family: monospace; }
+        .t-name { font-size: 0.8rem; font-weight: 500; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-actions { display: flex; gap: 6px; opacity: 0.2; }
+        .track-item:hover .track-actions { opacity: 1; }
+        .act-btn { font-size: 0.55rem; color: var(--text-main); text-decoration: none; border: 1px solid var(--border); padding: 2px 5px; font-weight: bold; border-radius: 2px; background: none; cursor: pointer; }
+        .act-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* Playlist */
-        .playlist-scroll { max-height: 280px; overflow-y: auto; border-top: 1px solid var(--border); }
-        .album-label { padding: 20px 20px 5px; font-size: 0.6rem; color: var(--text-dim); letter-spacing: 2px; font-weight: 800; text-transform: uppercase; }
-        
-        .track-row { display: flex; align-items: center; padding: 12px 20px; cursor: pointer; }
-        .track-row:hover { background: rgba(255,255,255,0.03); }
-        .track-row.active { background: rgba(0, 210, 255, 0.08); color: var(--accent); }
-        
-        .t-num { width: 30px; font-size: 0.7rem; opacity: 0.5; }
-        .t-name { font-size: 0.85rem; flex-grow: 1; }
-
-        .track-actions { display: none; gap: 8px; }
-        .track-row:hover .track-actions { display: flex; }
-        
-        .action-btn { background: #222; border: none; color: #fff; font-size: 0.55rem; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .action-btn:hover { background: var(--accent); color: #000; }
+        @media (max-width: 700px) {
+            .master-container { flex-direction: column; height: auto; width: 95%; margin: 20px 0; }
+            .resonance-chamber { border-right: none; border-bottom: 1px solid var(--border); padding: 30px; }
+            .tape-rack { height: 400px; }
+        }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; }
+
+        /* FOOTER ESSENTIALS */
+        .footer-essentials {
+            width: 960px;
+            max-width: 96vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            background: transparent;
+            padding: 12px 4px;
+            border-top: 1px solid var(--border);
+            margin-top: 0;
+        }
+        .footer-essentials a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+            margin: 0 4px;
+        }
+        .footer-essentials a:hover {
+            opacity: 0.8;
+        }
+        .footer-links {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
 
-<div class="player-wrapper" id="player-ui">
-    <div class="display-section">
-        <div class="meta-info">
-            <p id="cur-album">Muhaajir Archive</p>
-            <h1 id="cur-title">Mulai Mendengar</h1>
-            <div class="badge-container">
-                <span class="badge">NO COPYRIGHT SONG</span>
+<div class="master-container">
+    <div class="resonance-chamber">
+        <div>
+            <div class="album-breadcrumb" id="display-album">Arsip Suara</div>
+            <h1 class="song-title-large" id="display-title">Memulai...</h1>
+            <div class="meta-row">
+                <span>⏣ MUHAAJIR</span>
+                <span>⏤</span>
+                <span>2025</span>
+                <!-- diubah sesuai permintaan: [NO COPYRIGHT] → [NO COPYRIGHT SONG] -->
+                <span style="color:var(--accent); font-weight: 800;">[NO COPYRIGHT SONG]</span>
             </div>
-            <div class="lyrics-mini" id="lyrics">Klik lagu untuk memulai resonansi</div>
+            <div class="lyrics-fragment" id="status-bar">Pilih kaset dari rak untuk memutar suara.</div>
         </div>
-        <canvas id="visualizer"></canvas>
+
+        <div style="width: 100%;">
+            <div class="progress-container" id="prog-root">
+                <div id="progress-fill"></div>
+            </div>
+            <div class="time-labels">
+                <span id="time-now">0:00</span>
+                <span id="time-end">0:00</span>
+            </div>
+
+            <div class="controls-wrapper">
+                <div class="controls-main">
+                    <button class="btn-core" id="shuffle-btn" title="Acak">↻</button>
+                    <button class="btn-core" id="prev-btn" style="font-size: 1.6rem;">◁</button>
+                    <div class="play-pause-circle" id="play-trigger">
+                        <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <button class="btn-core" id="next-btn" style="font-size: 1.6rem;">▷</button>
+                    <button class="btn-core" id="repeat-btn" title="Ulang">↻</button>
+                </div>
+                
+                <div class="volume-integrated">
+                    <span>VOL</span>
+                    <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="controls-section">
-        <div class="time-info">
-            <span id="current-time">0:00</span>
-            <span id="duration">0:00</span>
-        </div>
-        <div class="progress-bar" id="progress-container">
-            <div id="progress-fill"></div>
-        </div>
-        
-        <div class="nav-group">
-            <button class="ctrl-btn" id="shuffle" style="font-size: 0.6rem; font-weight: 900;">SHUFFLE</button>
-            <button class="ctrl-btn" id="prev">◁</button>
-            <button class="play-btn state-play" id="play-pause"></button>
-            <button class="ctrl-btn" id="next">▷</button>
-            <button class="ctrl-btn" id="repeat">↻</button>
-        </div>
-
-        <div class="volume-control">
-            <span style="font-size: 0.6rem; font-weight: bold; color: var(--text-dim);">VOL</span>
-            <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
-        </div>
-    </div>
-
-    <div class="playlist-scroll" id="playlist">
-        <div class="album-label">Fragmen Suara</div>
-        <div class="track-row" data-url="https://files.catbox.moe/6pact4.mp3" data-title="Lintasan Tak Bermakna" data-album="Fragmen Suara"><span class="t-num">01</span><span class="t-name">Lintasan Tak Bermakna</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/6pact4.mp3')">LINK</button><a href="https://files.catbox.moe/6pact4.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/xksnbw.mp3" data-title="Padahal Sudah Bilang" data-album="Fragmen Suara"><span class="t-num">02</span><span class="t-name">Padahal Sudah Bilang</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/xksnbw.mp3')">LINK</button><a href="https://files.catbox.moe/xksnbw.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/g0qdg4.mp3" data-title="Mimpi yang Tertunda" data-album="Fragmen Suara"><span class="t-num">03</span><span class="t-name">Mimpi yang Tertunda</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/g0qdg4.mp3')">LINK</button><a href="https://files.catbox.moe/g0qdg4.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/xku817.mp3" data-title="Langit Masih Sama" data-album="Fragmen Suara"><span class="t-num">04</span><span class="t-name">Langit Masih Sama</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/xku817.mp3')">LINK</button><a href="https://files.catbox.moe/xku817.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/c21lkq.mp3" data-title="Suatu Hari Nanti" data-album="Fragmen Suara"><span class="t-num">05</span><span class="t-name">Suatu Hari Nanti</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/c21lkq.mp3')">LINK</button><a href="https://files.catbox.moe/c21lkq.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-
-        <div class="album-label">Resonansi Dalam Diam</div>
-        <div class="track-row" data-url="https://files.catbox.moe/zp943i.mp3" data-title="Nada Terpendam" data-album="Resonansi Dalam Diam"><span class="t-num">01</span><span class="t-name">Nada Terpendam</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/zp943i.mp3')">LINK</button><a href="https://files.catbox.moe/zp943i.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/4476ew.mp3" data-title="Langit Patah Arah" data-album="Resonansi Dalam Diam"><span class="t-num">02</span><span class="t-name">Langit Patah Arah</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/4476ew.mp3')">LINK</button><a href="https://files.catbox.moe/4476ew.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/fmjqjz.mp3" data-title="Tak Bernama, Tapi Ada" data-album="Resonansi Dalam Diam"><span class="t-num">03</span><span class="t-name">Tak Bernama, Tapi Ada</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/fmjqjz.mp3')">LINK</button><a href="https://files.catbox.moe/fmjqjz.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/bqdso1.mp3" data-title="Resonansi Dalam Diam" data-album="Resonansi Dalam Diam"><span class="t-num">04</span><span class="t-name">Resonansi Dalam Diam</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/bqdso1.mp3')">LINK</button><a href="https://files.catbox.moe/bqdso1.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/wy0hy6.mp3" data-title="Runtuh Tanpa Suara" data-album="Resonansi Dalam Diam"><span class="t-num">05</span><span class="t-name">Runtuh Tanpa Suara</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/wy0hy6.mp3')">LINK</button><a href="https://files.catbox.moe/wy0hy6.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/7nxsix.mp3" data-title="Kilau Tanpa Sorotan" data-album="Resonansi Dalam Diam"><span class="t-num">06</span><span class="t-name">Kilau Tanpa Sorotan</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/7nxsix.mp3')">LINK</button><a href="https://files.catbox.moe/7nxsix.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
-        <div class="track-row" data-url="https://files.catbox.moe/hkair0.mp3" data-title="Gelombang Terakhir" data-album="Resonansi Dalam Diam"><span class="t-num">07</span><span class="t-name">Gelombang Terakhir</span><div class="track-actions"><button class="action-btn" onclick="copyLink(event, 'https://files.catbox.moe/hkair0.mp3')">LINK</button><a href="https://files.catbox.moe/hkair0.mp3" download class="action-btn" style="text-decoration:none">DL</a></div></div>
+    <div class="tape-rack">
+        <div class="rack-header">DAFTAR PUTAR // ARCHIVE</div>
+        <div class="playlist-scroll" id="playlist-inject"></div>
     </div>
 </div>
 
-<audio id="audio" crossorigin="anonymous"></audio>
+<!-- FOOTER ESSENTIALS (sesuai permintaan: back to main-showcase, footer essentials, dan hak cipta) -->
+<div class="footer-essentials">
+    <span>© 2026 Muhaajir. All rights reserved.</span>
+    <div class="footer-links">
+        <a href="https://github.com/hajirmuhaajir/main-showcase" target="_blank" rel="noopener">↩ back to main-showcase</a>
+        <a href="https://github.com/hajirmuhaajir/footer-essentials" target="_blank" rel="noopener">⚙ footer essentials</a>
+    </div>
+</div>
+
+<audio id="audio-engine"></audio>
 
 <script>
-    const audio = document.getElementById('audio');
-    const playBtn = document.getElementById('play-pause');
-    const progressFill = document.getElementById('progress-fill');
-    const playerUI = document.getElementById('player-ui');
-    const trackRows = Array.from(document.querySelectorAll('.track-row'));
+    const songs = [
+        { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://files.catbox.moe/6pact4.mp3" },
+        { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://files.catbox.moe/xksnbw.mp3" },
+        { name: "Mimpi yang Tertunda", group: "Fragmen Suara", url: "https://files.catbox.moe/g0qdg4.mp3" },
+        { name: "Langit Masih Sama", group: "Fragmen Suara", url: "https://files.catbox.moe/xku817.mp3" },
+        { name: "Suatu Hari Nanti", group: "Fragmen Suara", url: "https://files.catbox.moe/c21lkq.mp3" },
+        { name: "Nada Terpendam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/zp943i.mp3" },
+        { name: "Langit Patah Arah", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/4476ew.mp3" },
+        { name: "Tak Bernama, Tapi Ada", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/fmjqjz.mp3" },
+        { name: "Resonansi Dalam Diam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/bqdso1.mp3" },
+        { name: "Runtuh Tanpa Suara", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/wy0hy6.mp3" },
+        { name: "Kilau Tanpa Sorotan", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/7nxsix.mp3" },
+        { name: "Gelombang Terakhir", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/hkair0.mp3" }
+    ];
+
+    const audio = document.getElementById('audio-engine');
+    const playBtn = document.getElementById('play-trigger');
+    const playIcon = document.getElementById('play-icon');
+    const statusBar = document.getElementById('status-bar');
+    const progFill = document.getElementById('progress-fill');
     
-    let currentIndex = -1;
-    let isShuffle = false;
-    let isRepeat = false;
-    let audioCtx, analyser, dataArray, canvas, ctx;
+    let currentIndex = -1, isShuffle = false, isRepeat = false;
 
-    function formatTime(s) {
-        if (isNaN(s)) return "0:00";
-        const m = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return `${m}:${sec.toString().padStart(2, '0')}`;
+    function init() {
+        renderPlaylist();
+        const saved = localStorage.getItem('muhaajir_last_v2');
+        loadTrack(saved ? parseInt(saved) : 0, false);
     }
 
-    function setupVisualizer() {
-        if (audioCtx) return;
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        const src = audioCtx.createMediaElementSource(audio);
-        src.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        analyser.fftSize = 64;
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        canvas = document.getElementById('visualizer');
-        ctx = canvas.getContext('2d');
-        draw();
+    function renderPlaylist() {
+        const container = document.getElementById('playlist-inject');
+        container.innerHTML = ''; // bersihkan sebelum render ulang
+        let currentGroup = "";
+        songs.forEach((s, i) => {
+            if(s.group !== currentGroup) {
+                currentGroup = s.group;
+                const label = document.createElement('div');
+                label.className = 'group-label';
+                label.innerText = currentGroup;
+                container.appendChild(label);
+            }
+            const item = document.createElement('div');
+            item.className = 'track-item';
+            item.setAttribute('data-index', i);
+            item.innerHTML = `
+                <span class="t-num">${(i+1).toString().padStart(2,'0')}</span>
+                <span class="t-name">${s.name}</span>
+                <div class="track-actions">
+                    <button class="act-btn" onclick="copyLink(event, '${s.url}')">LINK</button>
+                    <a href="${s.url}" download class="act-btn">DL</a>
+                </div>`;
+            item.onclick = (e) => {
+                // cegah jika yang diklik adalah tombol link atau download
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+                loadTrack(i);
+            };
+            container.appendChild(item);
+        });
     }
 
-    function draw() {
-        requestAnimationFrame(draw);
-        analyser.getByteFrequencyData(dataArray);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        let barWidth = (canvas.width / dataArray.length) * 2;
-        let x = 0;
-        for(let i = 0; i < dataArray.length; i++) {
-            let barHeight = dataArray[i] / 1.5;
-            ctx.fillStyle = `rgba(0, 210, 255, ${barHeight/150})`;
-            ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
-            x += barWidth;
+    function loadTrack(idx, play = true) {
+        if (idx < 0 || idx >= songs.length) return;
+        currentIndex = idx;
+        const s = songs[idx];
+        
+        audio.pause();
+        audio.src = s.url;
+        audio.load();
+
+        document.getElementById('display-title').innerText = s.name;
+        document.getElementById('display-album').innerText = s.group;
+        statusBar.innerText = "Resonansi dimulai...";
+        
+        document.querySelectorAll('.track-item').forEach((r, i) => r.classList.toggle('active', i === idx));
+        localStorage.setItem('muhaajir_last_v2', idx);
+
+        if(play) {
+            audio.play().catch(() => statusBar.innerText = "Tekan PLAY untuk memulai suara.");
         }
     }
 
-    function playTrack(idx, shouldPlay = true) {
-        if (idx < 0 || idx >= trackRows.length) return;
-        playerUI.classList.add('loading');
-        currentIndex = idx;
-        const row = trackRows[idx];
-        
-        audio.src = row.dataset.url;
-        document.getElementById('cur-title').innerText = row.dataset.title;
-        document.getElementById('cur-album').innerText = row.dataset.album;
-        document.getElementById('lyrics').innerText = `Sedang diputar...`;
-        
-        trackRows.forEach(r => r.classList.remove('active'));
-        row.classList.add('active');
-        localStorage.setItem('lastTrack', idx);
-        
-        audio.load();
-        if(shouldPlay) audio.play().catch(() => {});
-    }
-
     playBtn.onclick = () => audio.paused ? audio.play() : audio.pause();
+
+    document.getElementById('next-btn').onclick = () => {
+        if (currentIndex === -1) { loadTrack(0); return; }
+        let n = isShuffle ? Math.floor(Math.random()*songs.length) : (currentIndex + 1) % songs.length;
+        loadTrack(n);
+    };
+
+    document.getElementById('prev-btn').onclick = () => {
+        if (currentIndex === -1) { loadTrack(0); return; }
+        let p = (currentIndex - 1 + songs.length) % songs.length;
+        loadTrack(p);
+    };
+
+    document.getElementById('shuffle-btn').onclick = (e) => { 
+        isShuffle = !isShuffle; 
+        e.currentTarget.classList.toggle('active', isShuffle); 
+        statusBar.innerText = isShuffle ? "Mode Acak Aktif" : "Mode Berurutan Aktif";
+    };
+
+    document.getElementById('repeat-btn').onclick = (e) => { 
+        isRepeat = !isRepeat; 
+        e.currentTarget.classList.toggle('active', isRepeat); 
+        statusBar.innerText = isRepeat ? "Mengulang Satu Lagu" : "Putar Terus";
+    };
     
-    document.getElementById('next').onclick = () => {
-        let n = isShuffle ? Math.floor(Math.random()*trackRows.length) : (currentIndex + 1) % trackRows.length;
-        playTrack(n);
+    document.getElementById('vol-slider').oninput = (e) => audio.volume = e.target.value;
+    document.getElementById('prog-root').onclick = (e) => {
+        if (audio.duration) {
+            audio.currentTime = (e.offsetX / e.currentTarget.clientWidth) * audio.duration;
+        }
     };
 
-    document.getElementById('prev').onclick = () => {
-        let p = (currentIndex - 1 + trackRows.length) % trackRows.length;
-        playTrack(p);
+    audio.onplay = () => {
+        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        statusBar.innerText = "Memutar...";
     };
-
-    document.getElementById('shuffle').onclick = (e) => {
-        isShuffle = !isShuffle; e.currentTarget.classList.toggle('active', isShuffle);
+    audio.onpause = () => {
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+        statusBar.innerText = "Menjeda";
     };
-
-    document.getElementById('repeat').onclick = (e) => {
-        isRepeat = !isRepeat; e.currentTarget.classList.toggle('active', isRepeat);
+    audio.ontimeupdate = () => {
+        if (audio.duration) {
+            progFill.style.width = (audio.currentTime / audio.duration * 100) + "%";
+            document.getElementById('time-now').innerText = fmt(audio.currentTime);
+            document.getElementById('time-end').innerText = fmt(audio.duration);
+        }
     };
+    audio.onended = () => isRepeat ? audio.play() : document.getElementById('next-btn').click();
 
-    document.getElementById('volume').oninput = (e) => audio.volume = e.target.value;
-
-    function copyLink(e, url) {
-        e.stopPropagation();
-        navigator.clipboard.writeText(url);
-        alert("Link lagu disalin!");
+    function fmt(s) { if(isNaN(s) || !isFinite(s)) return "0:00"; let m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
+    
+    function copyLink(e, url) { 
+        e.stopPropagation(); 
+        navigator.clipboard.writeText(url).then(() => {
+            statusBar.innerText = "Tautan berhasil disalin!";
+            setTimeout(() => statusBar.innerText = songs[currentIndex]?.name ? `Memutar: ${songs[currentIndex].name}` : "Terhubung", 2000);
+        }).catch(() => {
+            statusBar.innerText = "Gagal menyalin";
+        });
     }
 
-    audio.oncanplay = () => playerUI.classList.remove('loading');
-    audio.onplay = () => {
-        if (!audioCtx) setupVisualizer();
-        playBtn.classList.replace('state-play', 'state-pause');
-    };
-    audio.onpause = () => playBtn.classList.replace('state-pause', 'state-play');
-    audio.onloadedmetadata = () => document.getElementById('duration').textContent = formatTime(audio.duration);
-    audio.ontimeupdate = () => {
-        const pct = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = pct + "%";
-        document.getElementById('current-time').textContent = formatTime(audio.currentTime);
-    };
-    audio.onended = () => isRepeat ? audio.play() : document.getElementById('next').click();
-
-    document.getElementById('progress-container').onclick = (e) => {
-        const pct = e.offsetX / e.currentTarget.clientWidth;
-        audio.currentTime = pct * audio.duration;
-    };
-
-    window.onload = () => {
-        const last = localStorage.getItem('lastTrack');
-        playTrack(last ? parseInt(last) : 0, false);
-    };
-
-    trackRows.forEach((row, i) => {
-        row.onclick = (e) => {
-            if(!e.target.classList.contains('action-btn')) playTrack(i);
-        };
-    });
+    init();
 </script>
-
 </body>
 </html>
