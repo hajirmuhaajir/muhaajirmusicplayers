@@ -13,7 +13,18 @@
             --text-dim: #64748b;
             --border: #262626;
         }
+.heart {
+    display: inline-block;
+    color: #ff0000;
+    animation: heartbeat 1.2s infinite;
+    cursor: default;
+}
 
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
         * { box-sizing: border-box; transition: all 0.2s ease; }
         body {
             background: var(--bg);
@@ -167,7 +178,7 @@
                 <span>⏣ MUHAAJIR</span>
                 <span>⏤</span>
                 <span>2025</span>
-                <!-- diubah sesuai permintaan: [NO COPYRIGHT] → [NO COPYRIGHT SONG] -->
+                <!-- d[NO COPYRIGHT SONG] -->
                 <span style="color:var(--accent); font-weight: 800;">[NO COPYRIGHT SONG]</span>
             </div>
             <div class="lyrics-fragment" id="status-bar">Pilih kaset dari rak untuk memutar suara.</div>
@@ -207,12 +218,16 @@
     </div>
 </div>
 
-<!-- FOOTER ESSENTIALS (sesuai permintaan: back to main-showcase, footer essentials, dan hak cipta) -->
-<div class="footer-essentials">
-    <span>© 2026 Muhaajir. All rights reserved.</span>
+<!-- FOOTER ESSENTIALS -->
+<<div class="footer-essentials">
+    <span>© 2026 Muhaajir. All rights reserved. 
+        Built with <span class="heart">❤️</span> for Who is it?
+    </span>
+    ...
+</div>
     <div class="footer-links">
-        <a href="https://github.io/hajirmuhaajir/main-showcase" target="_blank" rel="noopener">↩ back to main-showcase</a>
-        <a href="https://github.io/hajirmuhaajir/footer-essentials" target="_blank" rel="noopener">⚙ footer essentials</a>
+        <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener">↩ back to main-showcase</a>
+        <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener">⚙ footer essentials</a>
     </div>
 </div>
 
