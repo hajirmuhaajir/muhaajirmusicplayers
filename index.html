@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe; connect-src 'self'; img-src 'self' data:; frame-src 'none';">
+    
     <title>muhaajir music players · arsip suara</title>
     <style>
         :root {
@@ -13,19 +21,9 @@
             --text-dim: #64748b;
             --border: #262626;
         }
-.heart {
-    display: inline-block;
-    color: #ff0000;
-    animation: heartbeat 1.2s infinite;
-    cursor: default;
-}
-
-@keyframes heartbeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
+        
         * { box-sizing: border-box; transition: all 0.2s ease; }
+        
         body {
             background: var(--bg);
             color: var(--text-main);
@@ -127,6 +125,35 @@
         .act-btn { font-size: 0.55rem; color: var(--text-main); text-decoration: none; border: 1px solid var(--border); padding: 2px 5px; font-weight: bold; border-radius: 2px; background: none; cursor: pointer; }
         .act-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+        /* HEART ANIMATION */
+        .heart {
+            display: inline-block;
+            color: #ff0000;
+            animation: heartbeat 1.2s infinite;
+            cursor: default;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* ROTATING NAME */
+        #rotating-name {
+            transition: opacity 0.3s ease-in-out;
+            display: inline-block;
+            min-width: 60px;
+            font-weight: bold;
+            color: var(--accent);
+            cursor: pointer;
+            border-bottom: 1px dotted var(--accent);
+        }
+        
+        #rotating-name:hover {
+            opacity: 0.8;
+        }
+
         @media (max-width: 700px) {
             .master-container { flex-direction: column; height: auto; width: 95%; margin: 20px 0; }
             .resonance-chamber { border-right: none; border-bottom: 1px solid var(--border); padding: 30px; }
@@ -150,15 +177,18 @@
             border-top: 1px solid var(--border);
             margin-top: 0;
         }
+        
         .footer-essentials a {
             color: var(--accent);
             text-decoration: none;
             border-bottom: 1px dotted var(--accent);
             margin: 0 4px;
         }
+        
         .footer-essentials a:hover {
             opacity: 0.8;
         }
+        
         .footer-links {
             display: flex;
             gap: 16px;
@@ -178,7 +208,6 @@
                 <span>⏣ MUHAAJIR</span>
                 <span>⏤</span>
                 <span>2025</span>
-                <!-- d[NO COPYRIGHT SONG] -->
                 <span style="color:var(--accent); font-weight: 800;">[NO COPYRIGHT SONG]</span>
             </div>
             <div class="lyrics-fragment" id="status-bar">Pilih kaset dari rak untuk memutar suara.</div>
@@ -219,165 +248,435 @@
 </div>
 
 <!-- FOOTER ESSENTIALS -->
-<<div class="footer-essentials">
-    <span>© 2026 Muhaajir. All rights reserved. 
-        Built with <span class="heart">❤️</span> for Who is it?
+<div class="footer-essentials">
+    <span>© 2026 Muhaajir. Built with <span class="heart">❤️</span> 
+        <span id="rotating-name" style="cursor:pointer;" data-test="rotating-name">Regina</span>
     </span>
-    ...
-</div>
     <div class="footer-links">
-        <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener">↩ back to main-showcase</a>
-        <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener">⚙ footer essentials</a>
+        <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener noreferrer">↩ back to main-showcase</a>
+        <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener noreferrer">⚙ footer essentials</a>
     </div>
 </div>
 
-<audio id="audio-engine"></audio>
+<audio id="audio-engine" preload="metadata"></audio>
 
 <script>
-    const songs = [
-        { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://files.catbox.moe/6pact4.mp3" },
-        { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://files.catbox.moe/xksnbw.mp3" },
-        { name: "Mimpi yang Tertunda", group: "Fragmen Suara", url: "https://files.catbox.moe/g0qdg4.mp3" },
-        { name: "Langit Masih Sama", group: "Fragmen Suara", url: "https://files.catbox.moe/xku817.mp3" },
-        { name: "Suatu Hari Nanti", group: "Fragmen Suara", url: "https://files.catbox.moe/c21lkq.mp3" },
-        { name: "Nada Terpendam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/zp943i.mp3" },
-        { name: "Langit Patah Arah", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/4476ew.mp3" },
-        { name: "Tak Bernama, Tapi Ada", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/fmjqjz.mp3" },
-        { name: "Resonansi Dalam Diam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/bqdso1.mp3" },
-        { name: "Runtuh Tanpa Suara", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/wy0hy6.mp3" },
-        { name: "Kilau Tanpa Sorotan", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/7nxsix.mp3" },
-        { name: "Gelombang Terakhir", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/hkair0.mp3" }
-    ];
+    (function() {
+        'use strict';
 
-    const audio = document.getElementById('audio-engine');
-    const playBtn = document.getElementById('play-trigger');
-    const playIcon = document.getElementById('play-icon');
-    const statusBar = document.getElementById('status-bar');
-    const progFill = document.getElementById('progress-fill');
-    
-    let currentIndex = -1, isShuffle = false, isRepeat = false;
+        // Proteksi: nonaktifkan eval
+        if (window.eval) {
+            Object.defineProperty(window, 'eval', {
+                value: function(str) {
+                    console.warn('eval() diblokir untuk keamanan');
+                    return undefined;
+                },
+                writable: false,
+                configurable: false
+            });
+        }
 
-    function init() {
-        renderPlaylist();
-        const saved = localStorage.getItem('muhaajir_last_v2');
-        loadTrack(saved ? parseInt(saved) : 0, false);
-    }
+        // Data lagu - validasi URL
+        const songData = [
+            { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://files.catbox.moe/6pact4.mp3" },
+            { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://files.catbox.moe/xksnbw.mp3" },
+            { name: "Mimpi yang Tertunda", group: "Fragmen Suara", url: "https://files.catbox.moe/g0qdg4.mp3" },
+            { name: "Langit Masih Sama", group: "Fragmen Suara", url: "https://files.catbox.moe/xku817.mp3" },
+            { name: "Suatu Hari Nanti", group: "Fragmen Suara", url: "https://files.catbox.moe/c21lkq.mp3" },
+            { name: "Nada Terpendam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/zp943i.mp3" },
+            { name: "Langit Patah Arah", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/4476ew.mp3" },
+            { name: "Tak Bernama, Tapi Ada", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/fmjqjz.mp3" },
+            { name: "Resonansi Dalam Diam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/bqdso1.mp3" },
+            { name: "Runtuh Tanpa Suara", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/wy0hy6.mp3" },
+            { name: "Kilau Tanpa Sorotan", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/7nxsix.mp3" },
+            { name: "Gelombang Terakhir", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/hkair0.mp3" }
+        ];
 
-    function renderPlaylist() {
-        const container = document.getElementById('playlist-inject');
-        container.innerHTML = ''; // bersihkan sebelum render ulang
-        let currentGroup = "";
-        songs.forEach((s, i) => {
-            if(s.group !== currentGroup) {
-                currentGroup = s.group;
-                const label = document.createElement('div');
-                label.className = 'group-label';
-                label.innerText = currentGroup;
-                container.appendChild(label);
+        // Validasi URL untuk keamanan
+        function isValidUrl(url) {
+            try {
+                const parsed = new URL(url);
+                return parsed.protocol === 'https:' && parsed.hostname === 'files.catbox.moe';
+            } catch {
+                return false;
             }
-            const item = document.createElement('div');
-            item.className = 'track-item';
-            item.setAttribute('data-index', i);
-            item.innerHTML = `
-                <span class="t-num">${(i+1).toString().padStart(2,'0')}</span>
-                <span class="t-name">${s.name}</span>
-                <div class="track-actions">
-                    <button class="act-btn" onclick="copyLink(event, '${s.url}')">LINK</button>
-                    <a href="${s.url}" download class="act-btn">DL</a>
-                </div>`;
-            item.onclick = (e) => {
-                // cegah jika yang diklik adalah tombol link atau download
-                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
-                loadTrack(i);
-            };
-            container.appendChild(item);
-        });
-    }
+        }
 
-    function loadTrack(idx, play = true) {
-        if (idx < 0 || idx >= songs.length) return;
-        currentIndex = idx;
-        const s = songs[idx];
+        // Filter lagu yang valid
+        const songs = songData.filter(song => isValidUrl(song.url));
+
+        if (songs.length === 0) {
+            console.error('Tidak ada lagu dengan URL valid');
+        }
+
+        // Elemen DOM
+        const audio = document.getElementById('audio-engine');
+        const playBtn = document.getElementById('play-trigger');
+        const playIcon = document.getElementById('play-icon');
+        const statusBar = document.getElementById('status-bar');
+        const progFill = document.getElementById('progress-fill');
+        const rotatingName = document.getElementById('rotating-name');
         
-        audio.pause();
-        audio.src = s.url;
-        audio.load();
+        // State
+        let currentIndex = songs.length > 0 ? 0 : -1;
+        let isShuffle = false;
+        let isRepeat = false;
+        let isNameCustomized = false;
+        let rotateInterval;
 
-        document.getElementById('display-title').innerText = s.name;
-        document.getElementById('display-album').innerText = s.group;
-        statusBar.innerText = "Resonansi dimulai...";
-        
-        document.querySelectorAll('.track-item').forEach((r, i) => r.classList.toggle('active', i === idx));
-        localStorage.setItem('muhaajir_last_v2', idx);
+        // --- LOGIKA ROTASI NAMA ---
+        const names = ["Muhaajir", "Hajir", "Suni", "Brava", "Niva", "Ricerca", "Genio", "Copi", "Regina"];
+        let nameIdx = 0;
 
-        if(play) {
-            audio.play().catch(() => statusBar.innerText = "Tekan PLAY untuk memulai suara.");
+        function rotateNames() {
+            if (!isNameCustomized && rotatingName) {
+                nameIdx = (nameIdx + 1) % names.length;
+                rotatingName.style.opacity = '0';
+                setTimeout(() => {
+                    if (rotatingName && !isNameCustomized) {
+                        rotatingName.innerText = names[nameIdx];
+                        rotatingName.style.opacity = '1';
+                    }
+                }, 200);
+            }
         }
-    }
 
-    playBtn.onclick = () => audio.paused ? audio.play() : audio.pause();
-
-    document.getElementById('next-btn').onclick = () => {
-        if (currentIndex === -1) { loadTrack(0); return; }
-        let n = isShuffle ? Math.floor(Math.random()*songs.length) : (currentIndex + 1) % songs.length;
-        loadTrack(n);
-    };
-
-    document.getElementById('prev-btn').onclick = () => {
-        if (currentIndex === -1) { loadTrack(0); return; }
-        let p = (currentIndex - 1 + songs.length) % songs.length;
-        loadTrack(p);
-    };
-
-    document.getElementById('shuffle-btn').onclick = (e) => { 
-        isShuffle = !isShuffle; 
-        e.currentTarget.classList.toggle('active', isShuffle); 
-        statusBar.innerText = isShuffle ? "Mode Acak Aktif" : "Mode Berurutan Aktif";
-    };
-
-    document.getElementById('repeat-btn').onclick = (e) => { 
-        isRepeat = !isRepeat; 
-        e.currentTarget.classList.toggle('active', isRepeat); 
-        statusBar.innerText = isRepeat ? "Mengulang Satu Lagu" : "Putar Terus";
-    };
-    
-    document.getElementById('vol-slider').oninput = (e) => audio.volume = e.target.value;
-    document.getElementById('prog-root').onclick = (e) => {
-        if (audio.duration) {
-            audio.currentTime = (e.offsetX / e.currentTarget.clientWidth) * audio.duration;
+        function startNameRotation() {
+            if (rotateInterval) clearInterval(rotateInterval);
+            rotateInterval = setInterval(rotateNames, 1300);
         }
-    };
 
-    audio.onplay = () => {
-        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-        statusBar.innerText = "Memutar...";
-    };
-    audio.onpause = () => {
-        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-        statusBar.innerText = "Menjeda";
-    };
-    audio.ontimeupdate = () => {
-        if (audio.duration) {
-            progFill.style.width = (audio.currentTime / audio.duration * 100) + "%";
-            document.getElementById('time-now').innerText = fmt(audio.currentTime);
-            document.getElementById('time-end').innerText = fmt(audio.duration);
+        // Fungsi untuk mengganti nama dengan sanitasi
+        window.changeName = function() {
+            if (!rotatingName) return;
+            
+            const currentName = rotatingName.innerText || '';
+            let newName = prompt("Masukkan Namamu:", currentName);
+            
+            if (newName) {
+                // Sanitasi input: hapus karakter berbahaya
+                newName = newName.trim()
+                    .replace(/[<>/\\"']/g, '') // Hapus karakter yang bisa digunakan untuk XSS
+                    .substring(0, 50); // Batasi panjang
+            
+                if (newName) {
+                    rotatingName.innerText = newName;
+                    isNameCustomized = true;
+                    try {
+                        localStorage.setItem('customName', newName);
+                    } catch (e) {
+                        console.log('localStorage tidak tersedia');
+                    }
+                }
+            }
+        };
+
+        // Load nama dari localStorage dengan sanitasi
+        function loadCustomName() {
+            try {
+                const savedName = localStorage.getItem('customName');
+                if (savedName) {
+                    const sanitized = savedName.replace(/[<>/\\"']/g, '').substring(0, 50);
+                    if (sanitized && rotatingName) {
+                        rotatingName.innerText = sanitized;
+                        isNameCustomized = true;
+                    }
+                }
+            } catch (e) {
+                console.log('localStorage tidak tersedia');
+            }
         }
-    };
-    audio.onended = () => isRepeat ? audio.play() : document.getElementById('next-btn').click();
 
-    function fmt(s) { if(isNaN(s) || !isFinite(s)) return "0:00"; let m = Math.floor(s/60), sec = Math.floor(s%60); return `${m}:${sec.toString().padStart(2,'0')}`; }
-    
-    function copyLink(e, url) { 
-        e.stopPropagation(); 
-        navigator.clipboard.writeText(url).then(() => {
+        // --- LOGIKA PLAYER MUSIK ---
+        function init() {
+            if (songs.length === 0) {
+                statusBar.innerText = 'Error: Tidak ada lagu tersedia';
+                return;
+            }
+            
+            renderPlaylist();
+            loadCustomName();
+            startNameRotation();
+            loadTrack(getSavedIndex(), false);
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            if (!audio || !playBtn) return;
+
+            playBtn.addEventListener('click', () => {
+                try {
+                    audio.paused ? audio.play() : audio.pause();
+                } catch (e) {
+                    statusBar.innerText = 'Error memutar audio';
+                }
+            });
+
+            const nextBtn = document.getElementById('next-btn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (songs.length === 0 || currentIndex === -1) return;
+                    
+                    let next;
+                    if (isShuffle) {
+                        do {
+                            next = Math.floor(Math.random() * songs.length);
+                        } while (next === currentIndex && songs.length > 1);
+                    } else {
+                        next = (currentIndex + 1) % songs.length;
+                    }
+                    loadTrack(next);
+                });
+            }
+
+            const prevBtn = document.getElementById('prev-btn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (songs.length === 0 || currentIndex === -1) return;
+                    
+                    let prev = (currentIndex - 1 + songs.length) % songs.length;
+                    loadTrack(prev);
+                });
+            }
+
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            if (shuffleBtn) {
+                shuffleBtn.addEventListener('click', (e) => {
+                    isShuffle = !isShuffle;
+                    e.currentTarget.classList.toggle('active', isShuffle);
+                    statusBar.innerText = isShuffle ? "Mode Acak Aktif" : "Mode Berurutan Aktif";
+                });
+            }
+
+            const repeatBtn = document.getElementById('repeat-btn');
+            if (repeatBtn) {
+                repeatBtn.addEventListener('click', (e) => {
+                    isRepeat = !isRepeat;
+                    e.currentTarget.classList.toggle('active', isRepeat);
+                    statusBar.innerText = isRepeat ? "Mengulang Satu Lagu" : "Putar Terus";
+                });
+            }
+
+            const volSlider = document.getElementById('vol-slider');
+            if (volSlider && audio) {
+                volSlider.addEventListener('input', (e) => {
+                    audio.volume = Math.min(1, Math.max(0, parseFloat(e.target.value) || 0));
+                });
+            }
+
+            const progRoot = document.getElementById('prog-root');
+            if (progRoot && audio) {
+                progRoot.addEventListener('click', (e) => {
+                    if (audio.duration && isFinite(audio.duration)) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const percent = (e.clientX - rect.left) / rect.width;
+                        audio.currentTime = percent * audio.duration;
+                    }
+                });
+            }
+
+            if (audio) {
+                audio.addEventListener('play', () => {
+                    if (playIcon) {
+                        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    }
+                    statusBar.innerText = "Memutar...";
+                });
+
+                audio.addEventListener('pause', () => {
+                    if (playIcon) {
+                        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                    }
+                    statusBar.innerText = "Menjeda";
+                });
+
+                audio.addEventListener('timeupdate', updateProgress);
+                
+                audio.addEventListener('ended', () => {
+                    if (isRepeat) {
+                        audio.play().catch(() => {});
+                    } else {
+                        const nextBtn = document.getElementById('next-btn');
+                        if (nextBtn) nextBtn.click();
+                    }
+                });
+
+                audio.addEventListener('loadedmetadata', () => {
+                    const timeEnd = document.getElementById('time-end');
+                    if (timeEnd) {
+                        timeEnd.innerText = formatTime(audio.duration);
+                    }
+                });
+
+                audio.addEventListener('error', () => {
+                    statusBar.innerText = 'Error memuat audio';
+                });
+            }
+        }
+
+        function renderPlaylist() {
+            const container = document.getElementById('playlist-inject');
+            if (!container || songs.length === 0) return;
+            
+            container.innerHTML = '';
+            let currentGroup = "";
+
+            songs.forEach((song, index) => {
+                if (song.group !== currentGroup) {
+                    currentGroup = song.group;
+                    const label = document.createElement('div');
+                    label.className = 'group-label';
+                    label.innerText = currentGroup;
+                    container.appendChild(label);
+                }
+
+                const item = document.createElement('div');
+                item.className = 'track-item';
+                item.dataset.index = index;
+                item.innerHTML = `
+                    <span class="t-num">${(index + 1).toString().padStart(2, '0')}</span>
+                    <span class="t-name">${escapeHtml(song.name)}</span>
+                    <div class="track-actions">
+                        <button class="act-btn" data-copy="${escapeHtml(song.url)}">LINK</button>
+                        <a href="${escapeHtml(song.url)}" download class="act-btn" target="_blank" rel="noopener noreferrer">DL</a>
+                    </div>
+                `;
+                
+                item.addEventListener('click', (e) => {
+                    const target = e.target;
+                    if (!target.classList.contains('act-btn') && target.tagName !== 'A') {
+                        loadTrack(index);
+                    }
+                });
+
+                // Event listener untuk tombol copy
+                const copyBtn = item.querySelector('[data-copy]');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const url = e.currentTarget.dataset.copy;
+                        copyToClipboard(url);
+                    });
+                }
+                
+                container.appendChild(item);
+            });
+        }
+
+        // Escape HTML untuk mencegah XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Copy ke clipboard dengan fallback
+        function copyToClipboard(text) {
+            if (!text) return;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    statusBar.innerText = "Tautan berhasil disalin!";
+                    setTimeout(() => {
+                        if (currentIndex >= 0 && songs[currentIndex]) {
+                            statusBar.innerText = `Memutar: ${songs[currentIndex].name}`;
+                        } else {
+                            statusBar.innerText = "Terhubung";
+                        }
+                    }, 2000);
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
             statusBar.innerText = "Tautan berhasil disalin!";
-            setTimeout(() => statusBar.innerText = songs[currentIndex]?.name ? `Memutar: ${songs[currentIndex].name}` : "Terhubung", 2000);
-        }).catch(() => {
-            statusBar.innerText = "Gagal menyalin";
-        });
-    }
+        }
 
-    init();
+        function loadTrack(index, autoplay = true) {
+            if (index < 0 || index >= songs.length || !audio) return;
+            
+            currentIndex = index;
+            const song = songs[index];
+            
+            audio.pause();
+            audio.src = song.url;
+            audio.load();
+
+            const displayTitle = document.getElementById('display-title');
+            const displayAlbum = document.getElementById('display-album');
+            
+            if (displayTitle) displayTitle.innerText = song.name;
+            if (displayAlbum) displayAlbum.innerText = song.group;
+            statusBar.innerText = "Resonansi dimulai...";
+            
+            document.querySelectorAll('.track-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            try {
+                localStorage.setItem('muhaajir_last_v2', index);
+            } catch (e) {}
+
+            if (autoplay) {
+                audio.play().catch(() => {
+                    statusBar.innerText = "Tekan PLAY untuk memulai suara.";
+                });
+            }
+        }
+
+        function updateProgress() {
+            if (audio && audio.duration && isFinite(audio.duration)) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                if (progFill) {
+                    progFill.style.width = percent + '%';
+                }
+                const timeNow = document.getElementById('time-now');
+                if (timeNow) {
+                    timeNow.innerText = formatTime(audio.currentTime);
+                }
+            }
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function getSavedIndex() {
+            try {
+                const saved = localStorage.getItem('muhaajir_last_v2');
+                const parsed = saved ? parseInt(saved) : 0;
+                return (parsed >= 0 && parsed < songs.length) ? parsed : 0;
+            } catch {
+                return 0;
+            }
+        }
+
+        // Proteksi tambahan: nonaktifkan klik kanan (opsional)
+        // document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        // Start jika ada lagu
+        if (songs.length > 0) {
+            init();
+        } else {
+            statusBar.innerText = 'Error: Tidak ada sumber audio valid';
+        }
+    })();
 </script>
+
 </body>
 </html>
