@@ -9,7 +9,7 @@
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe; connect-src 'self'; img-src 'self' data:; frame-src 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe; connect-src 'self'; img-src 'self' https://i.postimg.cc data:; frame-src 'none';">
     
     <title>muhaajir music players · arsip suara</title>
     <style>
@@ -61,6 +61,63 @@
             border-right: 1px solid var(--border);
         }
 
+        /* LOGO STYLE */
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .brand-logo img {
+            height: 32px;
+            width: auto;
+            opacity: 0.9;
+            filter: brightness(0) invert(1); /* ubah ke putih karena logo asli mungkin berwarna */
+            transition: 0.2s;
+        }
+        .brand-logo img:hover {
+            opacity: 1;
+            filter: brightness(0) invert(1) drop-shadow(0 0 4px var(--accent));
+        }
+        /* khusus untuk area footer */
+        .footer-logo img {
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 6px;
+            filter: brightness(0) invert(0.7);
+        }
+        .footer-logo:hover img {
+            filter: brightness(0) invert(1) drop-shadow(0 0 2px var(--accent));
+        }
+
+        .sponsor-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+        }
+
+        .sponsor-item {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 5px 12px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            transition: 0.3s;
+            background: #111;
+        }
+
+        .sponsor-item:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
         .album-breadcrumb { font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; font-weight: 800; }
         .song-title-large { font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin: 12px 0 8px; letter-spacing: -1.5px; word-break: break-word; }
         .meta-row { font-size: 0.65rem; color: var(--text-dim); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
@@ -112,7 +169,27 @@
 
         /* PANEL KANAN */
         .tape-rack { flex: 0.8; background: #0d0d0d; display: flex; flex-direction: column; }
-        .rack-header { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.65rem; font-weight: 900; color: var(--text-dim); letter-spacing: 1px; }
+        .rack-header { 
+            padding: 16px 20px; 
+            border-bottom: 1px solid var(--border); 
+            font-size: 0.65rem; 
+            font-weight: 900; 
+            color: var(--text-dim); 
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo img {
+            height: 28px;
+            width: auto;
+            filter: brightness(0) invert(0.8);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .header-logo img:hover {
+            filter: brightness(0) invert(1) drop-shadow(0 0 4px var(--accent));
+        }
         .playlist-scroll { flex-grow: 1; overflow-y: auto; padding: 10px; }
         .group-label { padding: 15px 10px 5px; font-size: 0.6rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
         .track-item { display: flex; align-items: center; padding: 12px 10px; cursor: pointer; border-radius: 2px; }
@@ -202,6 +279,11 @@
 <div class="master-container">
     <div class="resonance-chamber">
         <div>
+            <!-- Logo di panel kiri atas -->
+            <div class="brand-logo">
+                <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="muhaajir logo" loading="lazy">
+                <span style="font-size:0.7rem; color:var(--text-dim); letter-spacing: 1px;">//Muhaajir Music Players</span>
+            </div>
             <div class="album-breadcrumb" id="display-album">Arsip Suara</div>
             <h1 class="song-title-large" id="display-title">Memulai...</h1>
             <div class="meta-row">
@@ -242,16 +324,72 @@
     </div>
 
     <div class="tape-rack">
-        <div class="rack-header">DAFTAR PUTAR // ARCHIVE</div>
+        <div class="rack-header">
+            <span>DAFTAR PUTAR</span>
+            <div class="header-logo">
+                <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="logo mini" loading="lazy">
+            </div>
+        </div>
         <div class="playlist-scroll" id="playlist-inject"></div>
     </div>
 </div>
 
-<!-- FOOTER ESSENTIALS -->
+<section id="sponsor">
+  <h2 class="sponsor-title">Sponsor this Project</h2>
+  <div class="sponsor-cards">
+    <a href="https://opencollective.com/eruda" target="_blank" class="card">Open Collective</a>
+    <a href="https://ko-fi.com/surunzi" target="_blank" class="card">Ko-fi</a>
+    <a href="https://surunzi.com/wechatpay.html" target="_blank" class="card">WeChat Pay</a>
+  </div>
+</section>
+
+<style>
+  #sponsor { 
+    text-align: center; 
+    margin: 2em 0; 
+    padding: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .sponsor-title {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1.5em;
+  }
+  .sponsor-cards { 
+    display: flex; 
+    justify-content: center; 
+    gap: 1em; 
+    flex-wrap: wrap; 
+  }
+  .card {
+    padding: 0.8em 1.5em;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: 0.3s ease;
+  }
+  .card:hover { 
+    background: var(--accent);
+    color: #000; 
+    box-shadow: 0 0 15px var(--accent);
+    transform: translateY(-3px);
+  }
+</style>
+
+<!-- FOOTER ESSENTIALS dengan logo -->
 <div class="footer-essentials">
-    <span>© 2026 Muhaajir. Built with <span class="heart">❤️</span> 
-        <span id="rotating-name" style="cursor:pointer;" data-test="rotating-name">Regina</span>
+    <span class="footer-logo">
+        <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ" style="height:16px;">
+        © 2026 Muhaajir. Built with <span class="heart">❤️</span> 
+        <span>Thanks to <span id="rotating-name" style="cursor:pointer;" onclick="changeName()">Regina</span></span>
     </span>
+
     <div class="footer-links">
         <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener noreferrer">↩ back to main-showcase</a>
         <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener noreferrer">⚙ footer essentials</a>
@@ -324,22 +462,35 @@
         let isNameCustomized = false;
         let rotateInterval;
 
-        // --- LOGIKA ROTASI NAMA ---
-        const names = ["Muhaajir", "Hajir", "Suni", "Brava", "Niva", "Ricerca", "Genio", "Copi", "Regina"];
-        let nameIdx = 0;
+// --- LOGIKA ROTASI NAMA BERURUTAN ---
+const names = ["Muhaajir", "Hajir", "Suni", "Brava", "Niva", "Ricerca", "Genio", "Copi", "Regina", "Eruda", "Surunzi"];
+let nameIdx = 0; // Melacak urutan mulai dari 0
 
-        function rotateNames() {
-            if (!isNameCustomized && rotatingName) {
-                nameIdx = (nameIdx + 1) % names.length;
-                rotatingName.style.opacity = '0';
-                setTimeout(() => {
-                    if (rotatingName && !isNameCustomized) {
-                        rotatingName.innerText = names[nameIdx];
-                        rotatingName.style.opacity = '1';
-                    }
-                }, 200);
+function rotateNames() {
+    const rotatingName = document.getElementById('rotating-name'); //
+    
+    // Pastikan elemen ada dan user belum mengganti nama secara manual
+    if (typeof isNameCustomized !== 'undefined' && !isNameCustomized && rotatingName) { 
+        
+        // Pindah ke urutan berikutnya, jika sudah sampai akhir akan balik ke awal
+        nameIdx = (nameIdx + 1) % names.length; 
+        
+        // Efek transisi halus
+        rotatingName.style.opacity = '0'; 
+        
+        setTimeout(() => {
+            if (rotatingName && !isNameCustomized) { 
+                // Mengambil nama sesuai urutan antrean
+                rotatingName.innerText = names[nameIdx]; 
+                rotatingName.style.opacity = '1'; 
             }
-        }
+        }, 200); 
+    }
+}
+
+// Menjalankan rotasi setiap 1300ms (1,3 detik)
+setInterval(rotateNames, 1300); 
+
 
         function startNameRotation() {
             if (rotateInterval) clearInterval(rotateInterval);
@@ -678,5 +829,9 @@
     })();
 </script>
 
+<!-- satu logo tambahan kecil di pojok kanan bawah absolute (opsional) biar makin terlihat -->
+<div style="position: fixed; bottom: 10px; right: 10px; opacity:0.2; pointer-events: none;">
+    <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" style="height:20px;" alt="">
+</div>
 </body>
 </html>
