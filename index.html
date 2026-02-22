@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Security Headers (CSP update untuk Dropbox) -->
+    <!-- Security Headers (CSP update untuk Dropbox & Google Drive) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://files.catbox.moe; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe https://*.dropbox.com https://*.dropboxusercontent.com; connect-src 'self'; img-src 'self' https://i.postimg.cc https://postimg.cc data:; frame-src 'none'; font-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://files.catbox.moe;
+        style-src 'self' 'unsafe-inline';
+        media-src 'self' 
+            https://files.catbox.moe 
+            https://*.dropbox.com https://*.dropboxusercontent.com 
+            https://drive.google.com https://*.googleusercontent.com https://*.googleapis.com;
+        connect-src 'self' https://drive.google.com https://*.googleusercontent.com;
+        img-src 'self' https://i.postimg.cc https://postimg.cc data:;
+        frame-src 'none';
+        font-src 'self';
+    ">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png">
@@ -804,7 +816,9 @@
         </div>
     </div>
 
-    <audio id="audio-engine" preload="metadata"></audio>
+    <!-- AUDIO ELEMENT dengan crossorigin="anonymous" -->
+    <audio id="audio-engine" preload="metadata" crossorigin="anonymous"></audio>
+    
     <div class="logo-watermark">
         <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ watermark" onerror="this.onerror=null; this.style.display='none';">
     </div>
