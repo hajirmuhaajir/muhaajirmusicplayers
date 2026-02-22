@@ -4,247 +4,695 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Security Headers -->
+    <!-- Security Headers (CSP update untuk Dropbox) -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-    
-    <!-- CSP mengizinkan catbox.moe dan postimg.cc -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://files.catbox.moe; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe; connect-src 'self'; img-src 'self' https://i.postimg.cc https://postimg.cc data:; frame-src 'none'; font-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://files.catbox.moe; style-src 'self' 'unsafe-inline'; media-src 'self' https://files.catbox.moe https://*.dropbox.com https://*.dropboxusercontent.com; connect-src 'self'; img-src 'self' https://i.postimg.cc https://postimg.cc data:; frame-src 'none'; font-src 'self';">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png">
     
-    <title>muhaajir · music players (G-Drive links)</title>
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicPlaylist",
+      "name": "muhaajir music players",
+      "description": "Koleksi musik independen dari Muhaajir.",
+      "numTracks": 12,
+      "track": [
+        {"@type": "MusicRecording", "name": "Lintasan Tak Bermakna", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Padahal Sudah Bilang", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Mimpi yang Tertunda", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Langit Masih Sama", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Suatu Hari Nanti", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Nada Terpendam", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Langit Patah Arah", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Tak Bernama, Tapi Ada", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Resonansi Dalam Diam", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Runtuh Tanpa Suara", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Kilau Tanpa Sorotan", "byArtist": "Muhaajir"},
+        {"@type": "MusicRecording", "name": "Gelombang Terakhir", "byArtist": "Muhaajir"}
+      ],
+      "url": "https://hajirmuhaajir.github.io/muhaajirmusicplayers"
+    }
+    </script>
+    
+    <title>muhaajir music players</title>
     <style>
-        :root {
-            --bg: #0a0a0a;
-            --panel: #141414;
-            --accent: #ffd700;
-            --text-main: #f8fafc;
-            --text-dim: #64748b;
-            --border: #0a1a2f;
-        }
-        
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-        
-        body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        /* ----- RESET & VARIABEL PREMIUM ----- */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-deep: #0a0a0a;
+            --panel-charcoal: #141414;
+            --gold-primary: #ffd700;
+            --text-bright: #f8fafc;
+            --text-subtle: #94a3b8;
+            --border-dim: #1e293b;
+            --glass-bg: rgba(20, 20, 20, 0.8);
+            --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            --shadow-glow: 0 0 15px rgba(255, 215, 0, 0.2);
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px 10px;
-        }
-
-        .master-container {
-            display: flex;
-            width: 960px;
-            max-width: 96vw;
-            height: 580px;
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            overflow: hidden;
+            padding: 20px 16px;
+            margin: 0;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-            margin-bottom: 16px;
         }
 
-        /* PANEL KIRI — RESONANSI */
+        /* ----- LOGIN SCREEN (SPLASH) ----- */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-deep);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: none;
+        }
+        .login-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .login-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 32px;
+            filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(255,215,0,0.5));
+            animation: softPulse 2s infinite ease-in-out;
+        }
+        .login-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,215,0,0.2);
+            border-top-color: var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes softPulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* ----- HEADER (diatas container) ----- */
+        #mainHeader {
+            width: min(1200px, 96vw);
+            margin-bottom: 16px;
+            background: transparent;
+            z-index: 100;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+        .logo-link {
+            display: inline-block;
+            transition: var(--transition-smooth);
+        }
+        .logo-link:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px var(--gold-primary));
+        }
+        .header-logo {
+            height: 48px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+        .header-clock {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gold-primary);
+            background: rgba(255,215,0,0.1);
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,215,0,0.3);
+            backdrop-filter: blur(4px);
+            letter-spacing: 2px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Master container (seperti sebelumnya) */
+        .master-container {
+            width: min(1200px, 96vw);
+            background: var(--panel-charcoal);
+            border: 1px solid var(--border-dim);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            box-shadow: var(--shadow-heavy);
+            backdrop-filter: blur(2px);
+            margin-bottom: 20px;
+            transition: var(--transition-smooth);
+        }
+
         .resonance-chamber {
-            flex: 1.2;
-            padding: 40px 32px;
+            flex: 1.3;
+            padding: 40px 36px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border-right: 1px solid var(--border);
+            background: linear-gradient(145deg, #121212 0%, #0c0c0c 100%);
+            border-right: 1px solid var(--border-dim);
         }
 
-        .main-logo {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-        
-        .main-logo img {
-            height: 70px;
-            width: auto;
-            filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255,215,0,0.3));
-            transition: 0.3s;
-        }
-        
-        .main-logo img:hover {
-            filter: brightness(0) invert(1) drop-shadow(0 0 12px var(--accent));
-            transform: scale(1.02);
+        .tape-rack {
+            flex: 0.9;
+            background: #0f0f0f;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #2a2a2a;
         }
 
         .brand-logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 24px;
         }
         .brand-logo img {
-            height: 32px;
+            height: 36px;
             width: auto;
-            opacity: 0.9;
-            filter: brightness(0) invert(1);
-            transition: 0.2s;
+            filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255,215,0,0.2));
+            transition: var(--transition-smooth);
         }
-        .brand-logo img:hover {
-            opacity: 1;
-            filter: brightness(0) invert(1) drop-shadow(0 0 4px var(--accent));
-        }
-        .footer-logo img {
-            height: 18px;
-            vertical-align: middle;
-            margin-right: 6px;
-            filter: brightness(0) invert(0.7);
-        }
-        .footer-logo:hover img {
-            filter: brightness(0) invert(1) drop-shadow(0 0 2px var(--accent));
+        .brand-logo span {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--text-subtle);
+            border-left: 1px solid var(--border-dim);
+            padding-left: 12px;
         }
 
-        .album-breadcrumb { font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; font-weight: 800; }
-        .song-title-large { font-size: 2.5rem; font-weight: 900; line-height: 1.1; margin: 12px 0 8px; letter-spacing: -1.5px; word-break: break-word; color: var(--text-main); }
-        .meta-row { font-size: 0.65rem; color: var(--text-dim); display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
-        
-        /* Status playback (baris baru) */
-        .playback-status {
-            font-size: 0.8rem;
-            color: var(--accent);
-            margin-top: 15px;
-            margin-bottom: 5px;
-            font-weight: 600;
+        .album-breadcrumb {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .song-title-large {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 8px 0 12px 0;
+            color: var(--text-bright);
+            word-break: break-word;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .meta-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--text-subtle);
+            margin-bottom: 24px;
+        }
+        .meta-row span:last-child {
+            color: var(--gold-primary);
+            background: rgba(255,215,0,0.08);
+            padding: 4px 10px;
+            border-radius: 30px;
             letter-spacing: 0.5px;
         }
 
-        /* Area lirik dengan scroll */
+        .playback-status {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gold-primary);
+            background: rgba(255,215,0,0.05);
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,215,0,0.2);
+            backdrop-filter: blur(4px);
+            width: fit-content;
+        }
+
         .lyrics-display {
-            margin-top: 5px;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            border-left: 2px solid var(--accent);
-            padding-left: 15px;
-            min-height: 150px;
-            max-height: 200px;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid var(--gold-primary);
+            padding: 20px 20px 20px 24px;
+            border-radius: 0 16px 16px 0;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+            min-height: 160px;
+            max-height: 240px;
             overflow-y: auto;
             white-space: pre-wrap;
+            word-break: break-word;
             scrollbar-width: thin;
-            scrollbar-color: var(--accent) #222;
-            line-height: 1.5;
-            background: rgba(0,0,0,0.2);
-            border-radius: 0 4px 4px 0;
+            scrollbar-color: var(--gold-primary) #1e1e1e;
+            margin: 16px 0 24px 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         .lyrics-display::-webkit-scrollbar {
-            width: 4px;
+            width: 5px;
         }
         .lyrics-display::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 2px;
+            background: var(--gold-primary);
+            border-radius: 10px;
         }
 
-        .progress-container { width: 100%; height: 4px; background: #222; cursor: pointer; margin-bottom: 6px; margin-top: auto; border-radius: 2px; }
-        #progress-fill { height: 100%; background: var(--accent); width: 0%; position: relative; border-radius: 2px; }
-        .time-labels { display: flex; justify-content: space-between; font-size: 0.6rem; font-family: monospace; color: var(--text-dim); }
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px 0 8px 0;
+            transition: var(--transition-smooth);
+        }
+        .progress-container:hover {
+            height: 8px;
+            background: #333;
+        }
+        #progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-primary), #f5e56b);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .time-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-subtle);
+            margin-bottom: 18px;
+        }
+
+        /* Visualizer Canvas */
+        #audio-visualizer {
+            width: 100%;
+            height: 60px;
+            background: #0a0a0a;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid rgba(255,215,0,0.2);
+            box-shadow: var(--shadow-glow);
+        }
 
         .controls-wrapper {
-            margin-top: 25px;
             background: rgba(255,255,255,0.02);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-dim);
+            border-radius: 28px;
+            padding: 22px 26px;
+            margin-top: 10px;
+            backdrop-filter: blur(8px);
         }
 
-        .controls-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .btn-core { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem; }
-        .btn-core.active { color: var(--accent); text-shadow: 0 0 8px var(--accent); }
-        .btn-core:hover { color: var(--text-main); }
+        .controls-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .btn-core {
+            background: transparent;
+            border: none;
+            color: var(--text-subtle);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .btn-core:hover {
+            color: var(--text-bright);
+            background: rgba(255,255,255,0.05);
+            transform: scale(1.1);
+        }
+        .btn-core.active {
+            color: var(--gold-primary);
+            text-shadow: 0 0 8px var(--gold-primary);
+        }
 
         .play-pause-circle {
-            width: 60px; height: 60px; background: var(--text-main); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            width: 64px;
+            height: 64px;
+            background: var(--text-bright);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
-        .play-pause-circle:hover { transform: scale(1.05); background: var(--accent); }
-        .play-pause-circle svg { width: 24px; height: 24px; fill: var(--bg); }
+        .play-pause-circle:hover {
+            background: var(--gold-primary);
+            transform: scale(1.07);
+            box-shadow: 0 0 30px var(--gold-primary);
+        }
+        .play-pause-circle svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--bg-deep);
+        }
 
         .volume-integrated {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            gap: 18px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,215,0,0.15);
         }
-        .volume-integrated span { font-size: 0.6rem; font-weight: 900; color: var(--text-dim); }
+        .volume-integrated span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: var(--gold-primary);
+            min-width: 38px;
+        }
         .volume-integrated input[type=range] {
-            flex-grow: 1;
-            height: 2px;
+            flex: 1;
+            height: 4px;
             -webkit-appearance: none;
             background: #333;
-            accent-color: var(--accent);
+            border-radius: 10px;
+        }
+        .volume-integrated input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--gold-primary);
+            border-radius: 50%;
             cursor: pointer;
+            box-shadow: 0 0 10px gold;
+            transition: 0.1s;
         }
 
-        /* PANEL KANAN */
-        .tape-rack { flex: 0.8; background: #0d0d0d; display: flex; flex-direction: column; }
-        .rack-header { 
-            padding: 16px 20px; 
-            border-bottom: 1px solid var(--border); 
-            font-size: 0.65rem; 
-            font-weight: 900; 
-            color: var(--text-dim); 
-            letter-spacing: 1px;
+        .rack-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-dim);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--text-subtle);
         }
         .header-logo img {
             height: 28px;
-            width: auto;
-            filter: brightness(0) invert(0.8);
+            filter: brightness(0) invert(0.7);
             transition: 0.2s;
-            cursor: pointer;
         }
-        .header-logo img:hover {
-            filter: brightness(0) invert(1) drop-shadow(0 0 4px var(--accent));
-        }
-        .playlist-scroll { flex-grow: 1; overflow-y: auto; padding: 10px; }
-        .group-label { padding: 15px 10px 5px; font-size: 0.6rem; color: var(--accent); text-transform: uppercase; font-weight: 800; }
-        .track-item { display: flex; align-items: center; padding: 12px 10px; cursor: pointer; border-radius: 2px; }
-        .track-item:hover { background: #1a1a1a; }
-        .track-item.active { background: #1e1e1e; border-left: 3px solid var(--accent); color: var(--accent); }
-        .t-num { font-size: 0.65rem; color: var(--text-dim); width: 25px; font-family: monospace; }
-        .t-name { font-size: 0.8rem; font-weight: 500; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
-        .track-item.active .t-name { color: var(--accent); }
-        .track-actions { display: flex; gap: 6px; opacity: 0.2; }
-        .track-item:hover .track-actions { opacity: 1; }
-        .act-btn { font-size: 0.55rem; color: var(--text-main); text-decoration: none; border: 1px solid var(--border); padding: 2px 5px; font-weight: bold; border-radius: 2px; background: none; cursor: pointer; }
-        .act-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+        /* Search Box */
+        .search-box {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-dim);
+        }
+        #search-input {
+            width: 100%;
+            padding: 10px 16px;
+            background: #1e1e1e;
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 30px;
+            color: var(--text-bright);
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+        #search-input:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+        #search-input::placeholder {
+            color: var(--text-subtle);
+            font-style: italic;
+        }
+
+        .playlist-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+            scrollbar-width: thin;
+        }
+        .group-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--gold-primary);
+            padding: 20px 16px 6px 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            margin: 2px 0;
+            position: relative;
+        }
+        .track-item:hover {
+            background: #222;
+            transform: translateX(4px);
+        }
+        .track-item.active {
+            background: #1e1e1e;
+            border-left: 4px solid var(--gold-primary);
+            box-shadow: var(--shadow-glow);
+        }
+        .t-num {
+            font-size: 0.7rem;
+            color: var(--text-subtle);
+            width: 32px;
+            font-family: monospace;
+        }
+        .t-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #ddd;
+        }
+        .track-item.active .t-name {
+            color: var(--gold-primary);
+            font-weight: 600;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-container {
+            position: relative;
+            margin-left: 8px;
+        }
+        .dropdown-btn {
+            background: none;
+            border: 1px solid #3a3a3a;
+            color: #ccc;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        .dropdown-btn:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            background: rgba(255,215,0,0.1);
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1e1e1e;
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
+            padding: 6px 0;
+            min-width: 180px;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-heavy);
+        }
+        .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: #ddd;
+            text-decoration: none;
+            display: block;
+            transition: 0.1s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .dropdown-item:hover {
+            background: #333;
+            color: var(--gold-primary);
+        }
+        .dropdown-item i {
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .footer-essentials {
+            width: min(1200px, 96vw);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 8px 8px 8px;
+            border-top: 1px solid var(--border-dim);
+            color: var(--text-subtle);
+            font-size: 0.75rem;
+            margin-top: 4px;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            background: transparent;
+            position: relative;
+            z-index: 5;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .footer-logo img {
+            height: 18px;
+            filter: brightness(0) invert(0.8);
+        }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-essentials a {
+            color: var(--gold-primary);
+            text-decoration: none;
+            border-bottom: 1px dotted transparent;
+            transition: 0.2s;
+        }
+        .footer-essentials a:hover {
+            border-bottom-color: var(--gold-primary);
+        }
         .heart {
             display: inline-block;
-            color: #ff0000;
-            animation: heartbeat 1.2s infinite;
-            cursor: default;
+            color: #ff4d4d;
+            animation: beat 1.2s infinite;
         }
+        @keyframes beat { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.3); } }
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
+        .logo-watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 16px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .logo-watermark img {
+            height: 40px;
+            filter: brightness(0) invert(1);
         }
 
         #rotating-name {
-            transition: opacity 0.3s ease-in-out;
-            display: inline-block;
+            transition: opacity 0.25s;
+            font-weight: 700;
+            color: var(--gold-primary);
             min-width: 60px;
-            font-weight: bold;
-            color: var(--accent);
+            display: inline-block;
+        }
+
+        @media (max-width: 700px) {
+            .master-container {
+                flex-direction: column;
+                border-radius: 24px;
+            }
+            .resonance-chamber {
+                border-right: none;
+                border-bottom: 1px solid var(--border-dim);
+                padding: 28px 20px;
+            }
+            .tape-rack {
+                height: 360px;
+            }
+            .song-title-large {
+                font-size: 2rem;
+            }
+            .controls-wrapper {
+                padding: 18px 16px;
+            }
+            .play-pause-circle {
+                width: 56px;
+                height: 56px;
+            }
+            .volume-integrated {
+                gap: 8px;
+            }
+            .footer-essentials {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-logo {
+                height: 40px;
+            }
+            .header-clock {
+                font-size: 1rem;
+                padding: 6px 12px;
+            }
         }
 
         .audio-loading::after {
@@ -252,1196 +700,566 @@
             display: inline-block;
             width: 12px;
             height: 12px;
-            border: 2px solid var(--accent);
+            border: 2px solid var(--gold-primary);
             border-top-color: transparent;
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
             margin-left: 8px;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            color: #ff6b6b !important;
-        }
-
-        @media (max-width: 700px) {
-            .master-container { flex-direction: column; height: auto; width: 95%; margin: 20px 0; }
-            .resonance-chamber { border-right: none; border-bottom: 1px solid var(--border); padding: 30px; }
-            .tape-rack { height: 400px; }
-        }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #333; }
-
-        .footer-essentials {
-            width: 960px;
-            max-width: 96vw;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            background: transparent;
-            padding: 12px 4px;
-            border-top: 1px solid var(--border);
-            margin-top: 0;
-        }
-        
-        .footer-essentials a {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--accent);
-            margin: 0 4px;
-        }
-        
-        .footer-essentials a:hover {
-            opacity: 0.8;
-        }
-        
-        .footer-links {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .logo-watermark {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 999;
-        }
-        
-        .logo-watermark img {
-            height: 30px;
-            width: auto;
-            filter: brightness(0) invert(1);
-        }
-
-        @media (min-width: 1024px) {
-            .master-container,
-            .footer-essentials {
-                max-width: 1200px;
-                width: 100%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            .master-container {
-                height: 680px;
-            }
-            .song-title-large {
-                font-size: 3.5rem;
-                letter-spacing: -2px;
-            }
-            .album-breadcrumb {
-                font-size: 0.9rem;
-                letter-spacing: 3px;
-            }
-            .meta-row {
-                font-size: 0.85rem;
-                gap: 25px;
-            }
-            .playback-status {
-                font-size: 1rem;
-                margin-top: 20px;
-            }
-            .lyrics-display {
-                font-size: 1rem;
-                max-height: 250px;
-            }
-            .time-labels {
-                font-size: 0.7rem;
-            }
-            .resonance-chamber {
-                padding: 60px 50px;
-            }
-            .brand-logo img {
-                height: 40px;
-            }
-            .main-logo img {
-                height: 90px;
-            }
-            .controls-wrapper {
-                padding: 25px;
-            }
-            .play-pause-circle {
-                width: 70px;
-                height: 70px;
-            }
-            .btn-core {
-                font-size: 1.5rem;
-            }
-            .rack-header {
-                padding: 22px 28px;
-                font-size: 0.8rem;
-            }
-            .header-logo img {
-                height: 36px;
-            }
-            .group-label {
-                font-size: 0.7rem;
-                padding: 20px 15px 8px;
-            }
-            .track-item {
-                padding: 15px 15px;
-            }
-            .t-num {
-                font-size: 0.7rem;
-                width: 30px;
-            }
-            .t-name {
-                font-size: 0.95rem;
-            }
-            .act-btn {
-                font-size: 0.6rem;
-                padding: 3px 8px;
-            }
-            .footer-essentials {
-                font-size: 0.8rem;
-                padding: 20px 4px;
-            }
-            .footer-logo img {
-                height: 20px;
-            }
-            .logo-watermark img {
-                height: 40px;
-            }
-            .master-container {
-                max-width: 1200px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-message { color: #ff8a8a !important; background: rgba(255,80,80,0.1); border-color: #ff5e5e; }
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN (SPLASH) -->
+    <div class="login-screen" id="loginScreen">
+        <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="Muhaajir Logo" class="login-logo" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
+        <div class="login-spinner"></div>
+    </div>
 
-<div class="master-container">
-    <div class="resonance-chamber">
-        <div>
-            <div class="brand-logo">
-                <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="muhaajir logo" loading="lazy">
-                <span style="font-size:0.7rem; color:var(--text-dim); letter-spacing: 1px;">//Muhaajir Music Players</span>
-            </div>
-            <div class="album-breadcrumb" id="display-album">Arsip Suara</div>
-            <h1 class="song-title-large" id="display-title">Memulai...</h1>
-            <div class="meta-row">
-                <span>⏣ MUHAAJIR</span>
-                <span>⏤</span>
-                <span>2025</span>
-                <span style="color:var(--accent); font-weight: 800;">[NO COPYRIGHT SONG]</span>
-            </div>
-
-            <!-- Status pemutaran (baris baru) -->
-            <div class="playback-status" id="playback-status">⏸️ Menjeda</div>
-            
-            <!-- Area lirik (sekarang terpisah) -->
-            <div class="lyrics-display" id="lyrics-display">🎧 Pilih kaset dari rak untuk memutar suara.</div>
+    <!-- HEADER dengan JAM DIGITAL -->
+    <header id="mainHeader">
+        <div class="header-container">
+            <a href="#home" class="logo-link">
+                <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="Muhaajir Logo" class="header-logo" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
+            </a>
+            <div class="header-clock" id="clock">--:--</div>
         </div>
+    </header>
 
-        <div style="width: 100%;">
-            <div class="progress-container" id="prog-root">
-                <div id="progress-fill"></div>
-            </div>
-            <div class="time-labels">
-                <span id="time-now">0:00</span>
-                <span id="time-end">0:00</span>
+    <!-- MASTER CONTAINER (PLAYER) -->
+    <div class="master-container">
+        <div class="resonance-chamber">
+            <div>
+                <div class="brand-logo">
+                    <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="muhaajir" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2236%22%20height%3D%2236%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
+                    <span>STUDIO RESONANSI</span>
+                </div>
+                <div class="album-breadcrumb" id="display-album">Arsip Suara</div>
+                <h1 class="song-title-large" id="display-title">Memuat...</h1>
+                <div class="meta-row">
+                    <span>⏣ MUHAAJIR</span>
+                    <span>⏤ 2025</span>
+                    <span>[NO COPYRIGHT]</span>
+                </div>
+                <div class="playback-status" id="playback-status">⏸️ Menjeda</div>
+                <div class="lyrics-display" id="lyrics-display">🎧 Pilih kaset dari rak untuk memutar suara.</div>
             </div>
 
-            <div class="controls-wrapper">
-                <div class="controls-main">
-                    <button class="btn-core" id="shuffle-btn" title="Acak">↻</button>
-                    <button class="btn-core" id="prev-btn" style="font-size: 1.6rem;">◁</button>
-                    <div class="play-pause-circle" id="play-trigger">
-                        <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <div>
+                <div class="progress-container" id="prog-root">
+                    <div id="progress-fill"></div>
+                </div>
+                <div class="time-labels">
+                    <span id="time-now">0:00</span>
+                    <span id="time-end">0:00</span>
+                </div>
+
+                <!-- AUDIO VISUALIZER CANVAS -->
+                <canvas id="audio-visualizer" width="300" height="60"></canvas>
+
+                <div class="controls-wrapper">
+                    <div class="controls-main">
+                        <button class="btn-core" id="shuffle-btn" title="Acak">↻</button>
+                        <button class="btn-core" id="prev-btn" style="font-size: 1.8rem;">◁</button>
+                        <div class="play-pause-circle" id="play-trigger">
+                            <svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                        <button class="btn-core" id="next-btn" style="font-size: 1.8rem;">▷</button>
+                        <button class="btn-core" id="repeat-btn" title="Ulang">↻</button>
                     </div>
-                    <button class="btn-core" id="next-btn" style="font-size: 1.6rem;">▷</button>
-                    <button class="btn-core" id="repeat-btn" title="Ulang">↻</button>
-                </div>
-                
-                <div class="volume-integrated">
-                    <span>VOL</span>
-                    <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
+                    <div class="volume-integrated">
+                        <span>VOL</span>
+                        <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="1">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="tape-rack">
-        <div class="rack-header">
-            <span>DAFTAR PUTAR</span>
-            <div class="header-logo">
-                <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="logo mini" loading="lazy">
+        <div class="tape-rack">
+            <div class="rack-header">
+                <span>DAFTAR PUTAR • ORIGINAL</span>
+                <div class="header-logo">
+                    <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2228%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
+                </div>
             </div>
+            <!-- SEARCH BOX -->
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Cari lagu...">
+            </div>
+            <div class="playlist-scroll" id="playlist-inject"></div>
         </div>
-        <div class="playlist-scroll" id="playlist-inject"></div>
     </div>
-</div>
 
-<div class="footer-essentials">
-    <span class="footer-logo">
-        <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ" style="height:16px;">
-        © 2025-2026 Muhaajir. Built with <span class="heart">❤️</span> 
-        <span style="margin-left: 8px;">Thanks To <span id="rotating-name">Regina</span></span>
-    </span>
-
-    <div class="footer-links">
-        <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener noreferrer">↩ back to main-showcase</a>
-        <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener noreferrer">⚙ footer essentials</a>
+    <!-- FOOTER -->
+    <div class="footer-essentials">
+        <span class="footer-logo">
+            <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2218%22%20height%3D%2218%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
+            © 2025-2026 Muhaajir · <span class="heart">❤️</span> 
+            <span style="margin-left: 6px;">Thanks to <span id="rotating-name">Regina</span></span>
+        </span>
+        <div class="footer-links">
+            <a href="https://hajirmuhaajir.github.io/main-showcase/" target="_blank" rel="noopener">↩ main-showcase</a>
+            <a href="https://hajirmuhaajir.github.io/footer-essentials" target="_blank" rel="noopener">⚙ essentials</a>
+        </div>
     </div>
-</div>
 
-<audio id="audio-engine" preload="metadata"></audio>
+    <audio id="audio-engine" preload="metadata"></audio>
+    <div class="logo-watermark">
+        <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ watermark" onerror="this.onerror=null; this.style.display='none';">
+    </div>
 
-<div class="logo-watermark">
-    <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="µ">
-</div>
+    <script>
+        (function() {
+            'use strict';
 
-<script>
-    (function() {
-        'use strict';
+            // --- FUNGSI JAM DIGITAL (HEADER) ---
+            function updateClock() {
+                var clock = document.getElementById('clock');
+                if (clock) {
+                    var now = new Date();
+                    var hours = now.getHours().toString().padStart(2, '0');
+                    var minutes = now.getMinutes().toString().padStart(2, '0');
+                    clock.textContent = hours + ':' + minutes;
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
 
-        // Proteksi eval
-        if (window.eval) {
-            Object.defineProperty(window, 'eval', {
-                value: function(str) {
-                    console.warn('eval() diblokir untuk keamanan');
-                    return undefined;
-                },
-                writable: false,
-                configurable: false
+            // --- HILANGKAN LOGIN SCREEN SETELAH SEMUA SIAP ---
+            window.addEventListener('load', function() {
+                const loginScreen = document.getElementById('loginScreen');
+                if (loginScreen) {
+                    setTimeout(() => {
+                        loginScreen.classList.add('hidden');
+                        setTimeout(() => {
+                            if (loginScreen.parentNode) loginScreen.remove();
+                        }, 600);
+                    }, 1500);
+                }
             });
-        }
 
-        // Data lagu dengan Google Drive ID
-        const rawSongData = [
-            // Fragmen Suara
-            { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://files.catbox.moe/6pact4.mp3", gdId: "1_Dn7CsNUNkECXotJYZcofSV90--d0mbg" },
-            { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://files.catbox.moe/xksnbw.mp3", gdId: "1xDIhBggeN2hbveqyMWE5Q6wCOqxllboP" },
-            { name: "Mimpi yang Tertunda", group: "Fragmen Suara", url: "https://files.catbox.moe/g0qdg4.mp3", gdId: "1Iu5Ecf105P-KsxUrqIhNajmhIvKXzJfk" },
-            { name: "Langit Masih Sama", group: "Fragmen Suara", url: "https://files.catbox.moe/xku817.mp3", gdId: "1zBxxORALIkAdsWDK6L-rvrUIxYkpHNGT" },
-            { name: "Suatu Hari Nanti", group: "Fragmen Suara", url: "https://files.catbox.moe/c21lkq.mp3", gdId: "1XGef_7uBzQyiXnRr34CbBaWOt3-GssOd" },
-            // Resonansi Dalam Diam
-            { name: "Nada Terpendam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/zp943i.mp3", gdId: "1nlR4fIW9OL3KTPSU9cCLW9rESA3A1sCb" },
-            { name: "Langit Patah Arah", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/4476ew.mp3", gdId: "17R1mc6FwqbK25ynWDw9CIIM7YrbAMqJ0" },
-            { name: "Tak Bernama, Tapi Ada", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/fmjqjz.mp3", gdId: "1OkeF_VH1NJWJS-99N4kt9K5Wg1yxN37G" },
-            { name: "Resonansi Dalam Diam", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/bqdso1.mp3", gdId: "1KFkKvwmFw8Fzo6ErCa65v_--BahudXM6" },
-            { name: "Runtuh Tanpa Suara", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/wy0hy6.mp3", gdId: "1v3vSjYL98fXKKgMpn_nhV-IDjsQvv_FU" },
-            { name: "Kilau Tanpa Sorotan", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/7nxsix.mp3", gdId: "1PAdvzfPDXl7IeOloMDM5gngeTV0KGcIV" },
-            { name: "Gelombang Terakhir", group: "Resonansi Dalam Diam", url: "https://files.catbox.moe/hkair0.mp3", gdId: "1094sBXRKLQ2c_3fdYJjRuykxKPP0lOfx" }
-        ];
-
-        // Validasi URL catbox
-        function isValidUrl(url) {
-            if (!url || typeof url !== 'string') return false;
-            try {
-                const parsed = new URL(url);
-                return parsed.protocol === 'https:' && parsed.hostname === 'files.catbox.moe';
-            } catch {
-                return false;
-            }
-        }
-
-        // Filter hanya lagu dengan URL catbox valid
-        const songs = rawSongData.filter(song => isValidUrl(song.url));
-
-        // ========== LIRIK LENGKAP SEMUA LAGU ==========
-        const lyricsMap = {
-            "Lintasan Tak Bermakna": `Di garis start nyali pun bicara,
-Mesin menderu bak suara raja.
-Asap naik, waktu pun lenyap,
-Tiap tikungan, mimpi pun tajam.
-
-Tak ada ragu dalam kecepatan,
-Lintasan adalah medan keberanian.
-Ban berteriak dalam keyakinan,
-Menuju juara, penuh pengorbanan.
-
-Detik berdetak di balik helm,
-Fokus tajam, pikiran diam.
-Satu peluang di ujung tikungan,
-Sekali salah, habis harapan.
-
-Di balik visor, mimpi menyala,
-Dibakar semangat, dinginkan raga.
-Gas ditekan, batas dilawan,
-Di jalur ini, hanya pemenang bertahan.
-
-Semua sepi saat melaju,
-Hanya angin yang tahu arahmu.
-Keringat jatuh, hati membara,
-Ini bukan sekadar lomba.
-
-Taklukan keraguan di tikungan tajam,
-Jiwa pembalap tak pernah padam.
-Terjatuh? Bangkit! Jangan bertanya,
-Karena lintasan tak beri jeda.
-
-Di atas aspal, cerita ditulis,
-Dengan kecepatan yang tak bisa ditangkap garis.
-GASPOL! TAKLUKKAN LINTASAN & JADILAH JUARA!`,
-
-            "Padahal Sudah Bilang": `Hari itu aku tak di kelas
-Tapi pesanku sudah sampai jelas
-Kuketik pelan, kuhormat seperti biasa
-Kirim ke wali kupikir itu cukup
-
-Tapi paginya, kulihat lembar absen
-Namaku hilang, tak ada keterangan
-
-Padahal sudah bilang
-Kusampaikan baik pada yang berwenang
-Tak perlu teriak, tak kurang sopan
-Tapi tetap saja dianggap hilang
-Padahal aku cuma ingin dimengerti
-
-Katanya semua punya hak bicara
-Tapi mengapa yang pelan tak didengar juga?
-Kubiarkan kepala menunduk diam
-Karena kata-kataku dianggap tak sampai malam
-
-Mungkin pesan itu terlewat
-Atau mungkin… sengaja tak dilihat
-
-Padahal sudah bilang
-Kujalankan aturan seperti yang diajar
-Tapi tetap ditulis tanpa kabar
-Seolah tak pernah ada niat benar
-Padahal aku hanya ingin dihargai
-
-Suara pelan bukan berarti salah
-Diam bukan berarti tak usaha
-Kalau pun salahku tak cukup keras
-Mengapa kebenaran tak diberi tempat?
-
-Padahal sudah bilang
-Kepada yang seharusnya mencatat
-Tapi tetap tertulis aku tak hadir
-Seolah aku menghilang tanpa jejak
-Padahal aku… selalu mencoba jujur
-
-Besok-besok, mungkin aku benar-benar diam
-Biar mereka tulis saja, Tanpa Keterangan`,
-
-            "Mimpi yang Tertunda": `Duduk diam di sudut kamar,
-Buku terbuka tapi pikiran liar.
-Cita-cita tinggi melangit,
-Tapi tangan malas untuk bangkit.
-
-Orang bilang aku pemimpi,
-Terlalu banyak tidur di siang hari.
-Tapi dalam hati ku tahu pasti,
-Ada jalan untuk jadi berarti.
-
-Tak cepat, tak langsung terbang tinggi,
-Jalan lambat pun bisa berarti.
-Waktu berjalan, aku mulai sadar,
-Impian itu harus dikejar.
-
-Kini aku berdiri di puncak dunia,
-Dulu dihina, kini dipercaya.
-Langkahku lambat tapi tak pernah mundur,
-Mimpi yang tertunda kini pun jujur.
-
-Hari-hari penuh alasan,
-Tapi malam penuh harapan.
-Layar penuh rencana palsu,
-Tapi hati tetap tak mau jemu.
-
-Aku tahu aku harus berubah,
-Walau malas sering buat resah.
-Sedikit demi sedikit ku coba,
-Hingga langkah kecil jadi nyata.
-
-Tak cepat, tak langsung terbang tinggi,
-Jalan lambat pun bisa berarti.
-Waktu berjalan, aku mulai sadar,
-Impian itu harus dikejar.
-
-Kini aku berdiri di puncak dunia,
-Dulu dihina, kini dipercaya.
-Langkahku lambat tapi tak pernah mundur,
-Mimpi yang tertunda kini pun jujur.
-
-Bukan soal seberapa cepat,
-Tapi seberapa kuat niat.
-Masa lalu bukan penentu,
-Karena masa depan milik yang mau.
-
-Kini aku berdiri di puncak dunia,
-Bukan karena cepat, tapi karena percaya.
-Langkahku lambat tapi tak pernah luntur,
-Mimpi yang tertunda… akhirnya jujur.`,
-
-            "Langit Masih Sama": `Pagi datang tanpa warna
-Langkahku berat, hati terluka
-Tapi aku tahu, waktu takkan tunggu
-Harus bangkit, walau masih ragu
-
-Setiap luka ada akhirnya
-Setiap gelap pasti ada cahaya
-
-Langit masih sama, biru di atas sana
-Meski badai sempat butakan mata
-Aku percaya, masih ada cahaya
-Di balik semua air mata
-
-Jejak mimpi yang sempat hilang
-Kupungut satu-satu dengan tenang
-Tak semua indah, tapi semua nyata
-Hidup bukan tentang menyerah
-
-Karena hati tak dicipta untuk padam
-Walau ribuan kali jatuh tenggelam
-
-Langit masih sama, biru di atas sana
-Meski badai sempat butakan mata
-Aku percaya, masih ada cahaya
-Di balik semua air mata
-
-Saat kau pikir semua terlambat
-Ingat, mentari tak pernah ingkar tempat
-Hari ini mungkin tak sempurna
-Tapi esok bisa jadi cerita
-
-Langit masih sama, biru di atas sana
-Dan kini ku tahu, ku tak sendiri
-Aku percaya, masih ada cahaya
-Yang menuntunku kembali`,
-
-            "Suatu Hari Nanti": `Di sudut kecil kota yang tenang
-Aku duduk bermimpi tentang lintasan panjang
-Tak ada sorak, tak ada gemerlap
-Hanya tekad di dada yang tak pernah lenyap
-
-Tak semua orang bisa mengerti
-Langkah kecil yang kuambil setiap hari
-Tapi aku tahu, dalam hati
-Setiap peluh ini punya arti
-
-Suatu hari nanti, aku melaju
-Melewati badai, luka, dan ragu
-Suatu hari nanti, ku buktikan
-Bahwa mimpi tak pernah jadi angan-angan
-
-Kadang dunia terasa berat
-Langkah tertahan, harapan nyaris tersesat
-Tapi aku belajar dari kesakitan
-Bahwa jatuh bukan akhir perjalanan
-
-Dari malam-malam panjang yang sunyi
-Dari tangis yang tak pernah terlihat di sini
-Kupahat impian di dinding hati
-Dan ku bawa sampai akhir nanti
-
-Suatu hari nanti, aku melaju
-Bukan hanya cepat, tapi penuh makna
-Suatu hari nanti, dunia tahu
-Ada harga dari tiap jejak yang kutuju
-
-Aku bermimpi...
-Menjadi juara dunia
-Bukan sekadar piala
-Tapi juara dari segala luka dan usaha
-
-Suatu hari nanti, ku tak sendiri
-Orang-orang yang kusayang ikut berdiri
-Suatu hari nanti, semua ini
-Jadi cerita tentang gigih yang tak pernah mati`,
-
-            "Nada Terpendam": `Di balik senyum, tersimpan
-Sebuah lagu yang tak pernah dinyanyikan
-Nada-nada yang kusimpan
-Dalam sunyi yang terus menjerat
-
-Kata ingin keluar, tapi takut terdengar
-Takut dihancurkan oleh waktu yang salah
-Jadi kupendam dalam ruang
-Yang hanya aku dan sepi yang tahu
-
-Kupeluk luka dalam diam
-Menunggu hari yang paham
-
-Andai kau tahu lagu di hatiku
-Yang tak pernah punya panggung untuk tumbuh
-Di setiap helaan napas yang tertahan
-Nada terpendam, nyanyian yang tertelan
-
-Kadang ingin aku teriak
-Tapi dunia sibuk dengan suaranya
-Tak ada ruang tuk bisikanku
-Yang perlahan hilang jadi abu
-
-Kupeluk mimpi yang tak terang
-Masih berharap kau datang
-
-Andai kau tahu lagu di hatiku
-Yang tak pernah punya panggung untuk tumbuh
-Di setiap helaan napas yang tertahan
-Nada terpendam, nyanyian yang tertelan
-
-Mungkin suatu hari nanti
-Ada telinga yang mau mengerti
-Tapi sampai saat itu tiba
-Biar kusimpan lagu ini sendiri
-
-Andai kau tahu, betapa ku ingin
-Menyanyikan semua yang terkunci
-Namun bibirku masih terkunci oleh sunyi
-Nada terpendam, tetap menanti…
-
-Di balik senyum, tersimpan
-Lagu yang tak pernah dinyanyikan...`,
-
-            "Langit Patah Arah": `Langit pun salah menatap
-Seperti aku, tak tahu harus ke mana
-Senja tak lagi jingga
-Waktu pun enggan bicara
-
-Langkahku kabur di bayang
-Arah hilang, peta pun tenggelam
-Kupanggil namaku sendiri
-Tak ada gema, hanya sepi
-
-Langit patah arah
-Tak tahu barat dari timur
-Seperti hati yang retak
-Dalam kabut rindu yang hancur
-
-Langit patah arah
-Tak bisa bedakan pagi atau petang
-Seperti aku yang hilang
-Tak temukan pulang
-
-Mungkin waktu perlu diam
-Untuk dengar suara dalam
-Mungkin aku perlu hilang
-Agar tahu di mana terang
-
-Langit patah arah
-Tak tahu barat dari timur
-Seperti hati yang retak
-Dalam kabut rindu yang hancur
-
-Langit patah arah
-Tak bisa bedakan pagi atau petang
-Seperti aku yang hilang
-Tak temukan pulang
-
-Langit pun salah menatap
-Dan aku masih... tak tahu harus ke mana`,
-
-            "Tak Bernama, Tapi Ada": `Aku tak dikenal oleh dunia
-Tak tercatat dalam sejarah siapa-siapa
-Tapi aku pernah menolong tanpa disadari
-Langkahku sunyi, tapi tetap berarti
-
-Kau tak pernah lihat aku
-Tapi aku selalu ada di balik bayangmu
-
-Tak bernama, tapi aku ada
-Dalam tawa yang kau rasa
-Tak tertulis, tapi nyata
-Di tiap detak yang buatmu percaya
-
-Aku bayang dalam keramaian
-Senyum yang singgah tanpa kau tahu siapa
-Mungkin kau lupa, atau tak pernah sadar
-Ada aku di balik hari yang lebih sabar
-
-Aku bukan siapa-siapa
-Tapi aku pernah jadi alasmu berdiri
-
-Tak bernama, tapi aku ada
-Dalam hangat yang kau kira fana
-Tak terlihat, tapi terasa
-Seperti suara saat kau diam
-
-Bukan pujian yang kucari
-Cukup kau berjalan lagi…
-
-Tak bernama, tapi aku ada
-Dalam luka yang perlahan reda
-Tak tertulis, tapi nyata
-Seperti angin yang buatmu bertahan
-
-Mungkin aku akan dilupa...
-Tapi jejakku... tetap ada...
-Tak bernama... tapi aku ada…`,
-
-            "Resonansi Dalam Diam": `Dalam sunyi aku berbicara
-Tanpa kata, tanpa suara
-Setiap jeda penuh makna
-Yang tak sempat terucap nyata
-
-Mereka bilang aku diam
-Padahal hatiku bergemuruh
-Bukan bisu, hanya tenggelam
-Dalam dunia yang terlalu gaduh
-
-Diamku bukan hampa
-Tapi gema yang tak kau dengar
-Detak jantung, hembus napas
-Nada yang tak pernah lepas
-
-Diamku bukan akhir
-Tapi awal yang lebih dalam
-Resonansi dalam diam
-Menembus ruang dan waktu diam-diam
-
-Bayang-bayang menari perlahan
-Di ruang kosong penuh kenangan
-Kutatap langit tanpa warna
-Mencari arti dalam gelap yang bicara
-
-Tak perlu teriak tuk mengguncang
-Kadang senyap lebih menyentuh
-Tanpa ada ini
-Kau takkan tahu artinya peluk tanpa peluh
-
-Diamku bukan hampa
-Tapi gema yang tak kau dengar
-Detak jantung, hembus napas
-Nada yang tak pernah lepas
-
-Diamku bukan akhir
-Tapi awal yang lebih dalam
-Resonansi dalam diam
-Menembus ruang dan waktu diam-diam
-
-Cobalah dengar
-Bila hatimu masih peka
-Diam ini bicara
-Dengan cara yang tak biasa`,
-
-            "Runtuh Tanpa Suara": `Langit kelabu di dalam dadaku
-Langkahku berat, tapi kau tak tahu
-Aku tersenyum di depanmu
-Padahal hatiku nyaris membeku
-
-Kau berjalan tanpa menoleh
-Aku tenggelam dalam bayangmu
-Dan dunia tetap berputar
-Meski aku tak lagi utuh
-
-Bahkan tangisku terlalu lirih
-Untuk mengguncang perhatianmu
-Aku runtuh tanpa suara
-Di titik terendah, kau tak melihatku
-Cinta ini jadi rahasia
-Yang hanya aku dan malam tahu
-
-Kau tertawa, aku ikut tertawa
-Padahal jiwaku sedang patah
-Kau bahagia, aku pura-pura
-Menjadi kuat, meski tak kuasa
-
-Andai kau tahu, betapa aku
-Menunggu satu tatapan darimu
-Tapi aku hanyalah bayangan
-Yang kau lewati tanpa perasaan
-
-Bahkan tangisku terlalu lirih
-Untuk mengguncang perhatianmu
-Aku runtuh tanpa suara
-Di titik terendah, kau tak melihatku
-Cinta ini jadi rahasia
-Yang hanya aku dan malam tahu
-Dan mungkin, selamanya begitu...
-Aku runtuh...
-Tanpa suara...`,
-
-            "Kilau Tanpa Sorotan": `Langkah kecil di jalan sepi
-Tak ada sorot, tak ada tepuk tangan
-Namun hatiku tetap bernyanyi
-Kilauku tak butuh panggung besar
-
-Kilau tanpa sorotan
-Tetap hidup dalam diam
-Resonansi yang perlahan
-Mengalun di ruang tenang
-
-Bayangan jatuh, cahaya redup
-Aku masih berdiri, tak perlu bukti
-Dalam senyap aku menemukan
-Arti hadir tanpa keramaian
-
-Kilau tanpa sorotan
-Tetap hidup dalam diam
-Resonansi yang perlahan
-Mengalun di ruang tenang
-
-Tak semua harus terlihat
-Tak semua harus terdengar
-Ada indah yang sederhana
-Ada damai tanpa suara
-
-Kilauku… tetap ada
-Meski tanpa sorotan
-Resonansi… dalam diam
-Mengikat jiwa perlahan`,
-
-            "Gelombang Terakhir": `Di tepi senja aku menunggu
-Gelombang terakhir datang membisu
-Angin berbisik, waktu pun layu
-Nada sederhana, hati pun luluh
-
-Gelombang terakhir, bawa aku pergi
-Temani langkah, temani mimpi
-Kita hanyut, tanpa janji lagi
-Gelombang terakhir, aku percaya diri
-
-Langkah kecil di pasir yang hilang
-Jejakmu samar, tapi tetap tenang
-Cahaya redup, tak perlu terang
-Ritme sederhana, rasa pun datang
-
-Gelombang terakhir, bawa aku pergi
-Temani langkah, temani mimpi
-Kita hanyut, tanpa janji lagi
-Gelombang terakhir, aku percaya diri
-
-Tak ada kata, hanya rasa
-Mengalir pelan, seperti nada
-Gelombang terakhir, aku percaya
-Diam pun bisa jadi suara
-
-Gelombang terakhir…
-Gelombang terakhir…
-Temani aku sampai tenang…`
-        };
-
-        // Elemen DOM
-        const audio = document.getElementById('audio-engine');
-        const playBtn = document.getElementById('play-trigger');
-        const playIcon = document.getElementById('play-icon');
-        const playbackStatus = document.getElementById('playback-status');
-        const lyricsDisplay = document.getElementById('lyrics-display');
-        const progFill = document.getElementById('progress-fill');
-        const rotatingName = document.getElementById('rotating-name');
-        const displayTitle = document.getElementById('display-title');
-        const displayAlbum = document.getElementById('display-album');
-        
-        // State
-        let currentIndex = songs.length > 0 ? 0 : -1;
-        let isShuffle = false;
-        let isRepeat = false;
-        let currentLyrics = null;
-        let lyricsTimeout = null;
-        let isLoading = false;
-
-        // Cek apakah ada lagu
-        if (songs.length === 0) {
-            if (playbackStatus) {
-                playbackStatus.textContent = '❌ Tidak ada sumber audio valid';
-                playbackStatus.classList.add('error-message');
-            }
-        }
-
-        // --- LOGIKA ROTASI NAMA ---
-        const names = ["Muhaajir", "Suni", "Brava", "Niva", "Ricerca", "Genio", "Copi", "Chita", "Hajir", "Regina"];
-        let nameIdx = 0;
-
-        function rotateNames() {
-            const rotatingName = document.getElementById('rotating-name');
-            if (rotatingName) { 
-                nameIdx = (nameIdx + 1) % names.length; 
-                rotatingName.style.opacity = '0'; 
-                setTimeout(() => {
-                    if (rotatingName) { 
-                        rotatingName.innerText = names[nameIdx]; 
-                        rotatingName.style.opacity = '1'; 
-                    }
-                }, 200); 
-            }
-        }
-        setInterval(rotateNames, 1300);
-
-        // --- FUNGSI UPDATE STATUS (hanya di playbackStatus) ---
-        function updateStatus(msg, isError = false) {
-            if (!playbackStatus) return;
-            playbackStatus.textContent = msg;
-            if (isError) {
-                playbackStatus.classList.add('error-message');
-            } else {
-                playbackStatus.classList.remove('error-message');
-            }
-        }
-
-        // --- FUNGSI TAMPILAN LIRIK (hanya di lyricsDisplay) ---
-        function displayLyrics() {
-            if (!lyricsDisplay) return;
-            
-            if (currentIndex >= 0 && songs[currentIndex]) {
-                const songName = songs[currentIndex].name;
-                const lyrics = lyricsMap[songName];
-                if (lyrics) {
-                    lyricsDisplay.textContent = lyrics;
-                } else {
-                    lyricsDisplay.textContent = `🎵 ${songName}\n\nLirik sedang dalam proses. Nikmati instrumentalnya dulu ya!`;
-                }
-            } else {
-                lyricsDisplay.textContent = "🎧 Pilih kaset dari rak untuk memutar suara.";
-            }
-            // Scroll ke atas
-            lyricsDisplay.scrollTop = 0;
-        }
-
-        // --- PESAN SEMENTARA (tampil di status, lalu kembali ke status pemutaran) ---
-        function temporaryMessage(msg, duration, isError = false) {
-            if (!playbackStatus) return;
-            
-            if (lyricsTimeout) {
-                clearTimeout(lyricsTimeout);
-            }
-            
-            // Simpan status terakhir sebelum ditimpa
-            const lastStatus = playbackStatus.textContent;
-            updateStatus(msg, isError);
-            
-            lyricsTimeout = setTimeout(() => {
-                // Kembalikan ke status pemutaran terkini
-                if (!audio.paused) {
-                    updateStatus("▶️ Memutar...");
-                } else {
-                    updateStatus("⏸️ Menjeda");
-                }
-                lyricsTimeout = null;
-            }, duration);
-        }
-
-        // --- RENDER PLAYLIST (sama seperti sebelumnya) ---
-        function renderPlaylist() {
-            const container = document.getElementById('playlist-inject');
-            if (!container || songs.length === 0) return;
-            
-            container.innerHTML = '';
-            let currentGroup = "";
-
-            songs.forEach((song, index) => {
-                if (!song || !song.url) return;
-                
-                if (song.group !== currentGroup) {
-                    currentGroup = song.group;
-                    const label = document.createElement('div');
-                    label.className = 'group-label';
-                    label.innerText = currentGroup;
-                    container.appendChild(label);
-                }
-
-                const item = document.createElement('div');
-                item.className = 'track-item';
-                item.dataset.index = index;
-                
-                const safeName = escapeHtml(song.name);
-                const gdDownload = `https://drive.google.com/uc?export=download&id=${song.gdId}`;
-                const websiteUrl = 'https://hajirmuhaajir.github.io/muhaajirmusicplayers';
-                
-                item.innerHTML = `
-                    <span class="t-num">${(index + 1).toString().padStart(2, '0')}</span>
-                    <span class="t-name">${safeName}</span>
-                    <div class="track-actions">
-                        <button class="act-btn" data-copy="${websiteUrl}">LINK</button>
-                        <a href="${gdDownload}" download class="act-btn" target="_blank" rel="noopener noreferrer">DL</a>
-                    </div>
-                `;
-                
-                item.addEventListener('click', (e) => {
-                    const target = e.target;
-                    if (!target.classList.contains('act-btn') && target.tagName !== 'A') {
-                        loadTrack(index);
-                    }
+            // --- PROTEKSI EVAL ---
+            if (window.eval) {
+                Object.defineProperty(window, 'eval', { 
+                    value: function() { console.warn('eval diblokir'); return; }, 
+                    writable: false, configurable: false 
                 });
+            }
 
-                const linkBtn = item.querySelector('[data-copy]');
-                if (linkBtn) {
-                    linkBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const textToCopy = e.currentTarget.dataset.copy;
-                        if (textToCopy) {
-                            copyToClipboard(textToCopy);
-                        } else {
-                            temporaryMessage('❌ Tautan tidak tersedia', 2000, true);
+            // --- DATA LAGU (sesuai format: Dropbox &raw=1 + Google Drive ID) ---
+            const rawSongs = [
+                { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/42d6gtx7f7tocie3whf2h/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Lintasan-20Tak-20Bermakna.mp3?rlkey=9bim2pumtfjcwmrhq9127fnpd&st=6e9nrwwe&raw=1", gdId: "1_Dn7CsNUNkECXotJYZcofSV90--d0mbg" },
+                { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/30o3te9g5k0mparg46ugd/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Padahal-20Sudah-20Bilang.mp3?rlkey=iz0oliiy3ddlzh4m84jw1oacb&st=coy2ftp3&raw=1", gdId: "1xDIhBggeN2hbveqyMWE5Q6wCOqxllboP" },
+                { name: "Mimpi yang Tertunda", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/ii4rxckfguu3hg2d7czdz/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Mimpi-20yang-20Tertunda.mp3?rlkey=5iyrx794rg46bj1zyo3gret6e&st=n45d3ba1&raw=1", gdId: "1Iu5Ecf105P-KsxUrqIhNajmhIvKXzJfk" },
+                { name: "Langit Masih Sama", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/bmrmy3eglkxxqcqp0klou/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Langit-20Masih-20Sama.mp3?rlkey=j3o7h2letkcf4vkekkj0uga7z&st=kevxjqpn&raw=1", gdId: "1zBxxORALIkAdsWDK6L-rvrUIxYkpHNGT" },
+                { name: "Suatu Hari Nanti", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/kph6ukril5n4ybsvavncd/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Suatu-20Hari-20Nanti.mp3?rlkey=76ltwumwy64f87swdqmof2y9j&st=vuu0iqhs&raw=1", gdId: "1XGef_7uBzQyiXnRr34CbBaWOt3-GssOd" },
+                { name: "Nada Terpendam", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/jvnjos6dltx1rqcnkhbp2/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Nada-20Terpendam.mp3?rlkey=unmjdgs3espvoq2dtyswimxmy&st=tjm8j8k1&raw=1", gdId: "1nlR4fIW9OL3KTPSU9cCLW9rESA3A1sCb" },
+                { name: "Langit Patah Arah", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/60npnlmfphhtcirdyhqyq/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Langit-20Patah-20Arah.mp3?rlkey=aevobshzsuuecl9vu3ozt655o&st=rt21gjkt&raw=1", gdId: "17R1mc6FwqbK25ynWDw9CIIM7YrbAMqJ0" },
+                { name: "Tak Bernama, Tapi Ada", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/y7ei6d66334mzpjwvxxr7/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Tak-20Bernama-2C-20Tapi-20Ada.mp3?rlkey=joauzm5e5vh4lbca1ccgpjwvt&st=1kd6ap8l&raw=1", gdId: "1OkeF_VH1NJWJS-99N4kt9K5Wg1yxN37G" },
+                { name: "Resonansi Dalam Diam", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/ovgaej9nunwwuwykszjs2/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Resonansi-20Dalam-20Diam.mp3?rlkey=ahn32s08fhvnfmiic5fu3jdvw&st=s46e5vva&raw=1", gdId: "1KFkKvwmFw8Fzo6ErCa65v_--BahudXM6" },
+                { name: "Runtuh Tanpa Suara", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/34m3ymxxned40jfkegkkq/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Runtuh-20Tanpa-20Suara.mp3?rlkey=65hjocwfjfr7bxo8mxofrcxqz&st=vdbtdvv0&raw=1", gdId: "1v3vSjYL98fXKKgMpn_nhV-IDjsQvv_FU" },
+                { name: "Kilau Tanpa Sorotan", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/ok2arwnaph6mt5rfmfb10/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Kilau-20Tanpa-20Sorotan.mp3?rlkey=6dsjfah665xk9m96tg83ynh6h&st=tr477auo&raw=1", gdId: "1PAdvzfPDXl7IeOloMDM5gngeTV0KGcIV" },
+                { name: "Gelombang Terakhir", group: "Resonansi Dalam Diam", url: "https://www.dropbox.com/scl/fi/jy8rav5ef4f2co9jy0hmi/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Gelombang-20Terakhir.mp3?rlkey=bfl4zqkolb0p8vm7kt0cbbtfn&st=txi8i6zt&raw=1", gdId: "1094sBXRKLQ2c_3fdYJjRuykxKPP0lOfx" }
+            ];
+
+            // --- LIRIK (lengkap) ---
+            const lyricsMap = {
+                "Lintasan Tak Bermakna": `Di garis start nyali pun bicara,\nMesin menderu bak suara raja.\nAsap naik, waktu pun lenyap,\nTiap tikungan, mimpi pun tajam.\n\nTak ada ragu dalam kecepatan,\nLintasan adalah medan keberanian.\nBan berteriak dalam keyakinan,\nMenuju juara, penuh pengorbanan.\n\nDetik berdetak di balik helm,\nFokus tajam, pikiran diam.\nSatu peluang di ujung tikungan,\nSekali salah, habis harapan.\n\nDi balik visor, mimpi menyala,\nDibakar semangat, dinginkan raga.\nGas ditekan, batas dilawan,\nDi jalur ini, hanya pemenang bertahan.\n\nSemua sepi saat melaju,\nHanya angin yang tahu arahmu.\nKeringat jatuh, hati membara,\nIni bukan sekadar lomba.\n\nTaklukan keraguan di tikungan tajam,\nJiwa pembalap tak pernah padam.\nTerjatuh? Bangkit! Jangan bertanya,\nKarena lintasan tak beri jeda.\n\nDi atas aspal, cerita ditulis,\nDengan kecepatan yang tak bisa ditangkap garis.\nGASPOL! TAKLUKKAN LINTASAN & JADILAH JUARA!`,
+                "Padahal Sudah Bilang": `Hari itu aku tak di kelas\nTapi pesanku sudah sampai jelas\nKuketik pelan, kuhormat seperti biasa\nKirim ke wali kupikir itu cukup\n\nTapi paginya, kulihat lembar absen\nNamaku hilang, tak ada keterangan\n\nPadahal sudah bilang\nKusampaikan baik pada yang berwenang\nTak perlu teriak, tak kurang sopan\nTapi tetap saja dianggap hilang\nPadahal aku cuma ingin dimengerti\n\nKatanya semua punya hak bicara\nTapi mengapa yang pelan tak didengar juga?\nKubiarkan kepala menunduk diam\nKarena kata-kataku dianggap tak sampai malam\n\nMungkin pesan itu terlewat\nAtau mungkin… sengaja tak dilihat\n\nPadahal sudah bilang\nKujalankan aturan seperti yang diajar\nTapi tetap ditulis tanpa kabar\nSeolah tak pernah ada niat benar\nPadahal aku hanya ingin dihargai\n\nSuara pelan bukan berarti salah\nDiam bukan berarti tak usaha\nKalau pun salahku tak cukup keras\nMengapa kebenaran tak diberi tempat?\n\nPadahal sudah bilang\nKepada yang seharusnya mencatat\nTapi tetap tertulis aku tak hadir\nSeolah aku menghilang tanpa jejak\nPadahal aku… selalu mencoba jujur\n\nBesok-besok, mungkin aku benar-benar diam\nBiar mereka tulis saja, Tanpa Keterangan`,
+                "Mimpi yang Tertunda": `Duduk diam di sudut kamar,\nBuku terbuka tapi pikiran liar.\nCita-cita tinggi melangit,\nTapi tangan malas untuk bangkit.\n\nOrang bilang aku pemimpi,\nTerlalu banyak tidur di siang hari.\nTapi dalam hati ku tahu pasti,\nAda jalan untuk jadi berarti.\n\nTak cepat, tak langsung terbang tinggi,\nJalan lambat pun bisa berarti.\nWaktu berjalan, aku mulai sadar,\nImpian itu harus dikejar.\n\nKini aku berdiri di puncak dunia,\nDulu dihina, kini dipercaya.\nLangkahku lambat tapi tak pernah mundur,\nMimpi yang tertunda kini pun jujur.\n\nHari-hari penuh alasan,\nTapi malam penuh harapan.\nLayar penuh rencana palsu,\nTapi hati tetap tak mau jemu.\n\nAku tahu aku harus berubah,\nWalau malas sering buat resah.\nSedikit demi sedikit ku coba,\nHingga langkah kecil jadi nyata.\n\nTak cepat, tak langsung terbang tinggi,\nJalan lambat pun bisa berarti.\nWaktu berjalan, aku mulai sadar,\nImpian itu harus dikejar.\n\nKini aku berdiri di puncak dunia,\nDulu dihina, kini dipercaya.\nLangkahku lambat tapi tak pernah mundur,\nMimpi yang tertunda kini pun jujur.\n\nBukan soal seberapa cepat,\nTapi seberapa kuat niat.\nMasa lalu bukan penentu,\nKarena masa depan milik yang mau.\n\nKini aku berdiri di puncak dunia,\nBukan karena cepat, tapi karena percaya.\nLangkahku lambat tapi tak pernah luntur,\nMimpi yang tertunda… akhirnya jujur.`,
+                "Langit Masih Sama": `Pagi datang tanpa warna\nLangkahku berat, hati terluka\nTapi aku tahu, waktu takkan tunggu\nHarus bangkit, walau masih ragu\n\nSetiap luka ada akhirnya\nSetiap gelap pasti ada cahaya\n\nLangit masih sama, biru di atas sana\nMeski badai sempat butakan mata\nAku percaya, masih ada cahaya\nDi balik semua air mata\n\nJejak mimpi yang sempat hilang\nKupungut satu-satu dengan tenang\nTak semua indah, tapi semua nyata\nHidup bukan tentang menyerah\n\nKarena hati tak dicipta untuk padam\nWalau ribuan kali jatuh tenggelam\n\nLangit masih sama, biru di atas sana\nMeski badai sempat butakan mata\nAku percaya, masih ada cahaya\nDi balik semua air mata\n\nSaat kau pikir semua terlambat\nIngat, mentari tak pernah ingkar tempat\nHari ini mungkin tak sempurna\nTapi esok bisa jadi cerita\n\nLangit masih sama, biru di atas sana\nDan kini ku tahu, ku tak sendiri\nAku percaya, masih ada cahaya\nYang menuntunku kembali`,
+                "Suatu Hari Nanti": `Di sudut kecil kota yang tenang\nAku duduk bermimpi tentang lintasan panjang\nTak ada sorak, tak ada gemerlap\nHanya tekad di dada yang tak pernah lenyap\n\nTak semua orang bisa mengerti\nLangkah kecil yang kuambil setiap hari\nTapi aku tahu, dalam hati\nSetiap peluh ini punya arti\n\nSuatu hari nanti, aku melaju\nMelewati badai, luka, dan ragu\nSuatu hari nanti, ku buktikan\nBahwa mimpi tak pernah jadi angan-angan\n\nKadang dunia terasa berat\nLangkah tertahan, harapan nyaris tersesat\nTapi aku belajar dari kesakitan\nBahwa jatuh bukan akhir perjalanan\n\nDari malam-malam panjang yang sunyi\nDari tangis yang tak pernah terlihat di sini\nKupahat impian di dinding hati\nDan ku bawa sampai akhir nanti\n\nSuatu hari nanti, aku melaju\nBukan hanya cepat, tapi penuh makna\nSuatu hari nanti, dunia tahu\nAda harga dari tiap jejak yang kutuju\n\nAku bermimpi...\nMenjadi juara dunia\nBukan sekadar piala\nTapi juara dari segala luka dan usaha\n\nSuatu hari nanti, ku tak sendiri\nOrang-orang yang kusayang ikut berdiri\nSuatu hari nanti, semua ini\nJadi cerita tentang gigih yang tak pernah mati`,
+                "Nada Terpendam": `Di balik senyum, tersimpan\nSebuah lagu yang tak pernah dinyanyikan\nNada-nada yang kusimpan\nDalam sunyi yang terus menjerat\n\nKata ingin keluar, tapi takut terdengar\nTakut dihancurkan oleh waktu yang salah\nJadi kupendam dalam ruang\nYang hanya aku dan sepi yang tahu\n\nKupeluk luka dalam diam\nMenunggu hari yang paham\n\nAndai kau tahu lagu di hatiku\nYang tak pernah punya panggung untuk tumbuh\nDi setiap helaan napas yang tertahan\nNada terpendam, nyanyian yang tertelan\n\nKadang ingin aku teriak\nTapi dunia sibuk dengan suaranya\nTak ada ruang tuk bisikanku\nYang perlahan hilang jadi abu\n\nKupeluk mimpi yang tak terang\nMasih berharap kau datang\n\nAndai kau tahu lagu di hatiku\nYang tak pernah punya panggung untuk tumbuh\nDi setiap helaan napas yang tertahan\nNada terpendam, nyanyian yang tertelan\n\nMungkin suatu hari nanti\nAda telinga yang mau mengerti\nTapi sampai saat itu tiba\nBiar kusimpan lagu ini sendiri\n\nAndai kau tahu, betapa ku ingin\nMenyanyikan semua yang terkunci\nNamun bibirku masih terkunci oleh sunyi\nNada terpendam, tetap menanti…\n\nDi balik senyum, tersimpan\nLagu yang tak pernah dinyanyikan...`,
+                "Langit Patah Arah": `Langit pun salah menatap\nSeperti aku, tak tahu harus ke mana\nSenja tak lagi jingga\nWaktu pun enggan bicara\n\nLangkahku kabur di bayang\nArah hilang, peta pun tenggelam\nKupanggil namaku sendiri\nTak ada gema, hanya sepi\n\nLangit patah arah\nTak tahu barat dari timur\nSeperti hati yang retak\nDalam kabut rindu yang hancur\n\nLangit patah arah\nTak bisa bedakan pagi atau petang\nSeperti aku yang hilang\nTak temukan pulang\n\nMungkin waktu perlu diam\nUntuk dengar suara dalam\nMungkin aku perlu hilang\nAgar tahu di mana terang\n\nLangit patah arah\nTak tahu barat dari timur\nSeperti hati yang retak\nDalam kabut rindu yang hancur\n\nLangit patah arah\nTak bisa bedakan pagi atau petang\nSeperti aku yang hilang\nTak temukan pulang\n\nLangit pun salah menatap\nDan aku masih... tak tahu harus ke mana`,
+                "Tak Bernama, Tapi Ada": `Aku tak dikenal oleh dunia\nTak tercatat dalam sejarah siapa-siapa\nTapi aku pernah menolong tanpa disadari\nLangkahku sunyi, tapi tetap berarti\n\nKau tak pernah lihat aku\nTapi aku selalu ada di balik bayangmu\n\nTak bernama, tapi aku ada\nDalam tawa yang kau rasa\nTak tertulis, tapi nyata\nDi tiap detak yang buatmu percaya\n\nAku bayang dalam keramaian\nSenyum yang singgah tanpa kau tahu siapa\nMungkin kau lupa, atau tak pernah sadar\nAda aku di balik hari yang lebih sabar\n\nAku bukan siapa-siapa\nTapi aku pernah jadi alasmu berdiri\n\nTak bernama, tapi aku ada\nDalam hangat yang kau kira fana\nTak terlihat, tapi terasa\nSeperti suara saat kau diam\n\nBukan pujian yang kucari\nCukup kau berjalan lagi…\n\nTak bernama, tapi aku ada\nDalam luka yang perlahan reda\nTak tertulis, tapi nyata\nSeperti angin yang buatmu bertahan\n\nMungkin aku akan dilupa...\nTapi jejakku... tetap ada...\nTak bernama... tapi aku ada…`,
+                "Resonansi Dalam Diam": `Dalam sunyi aku berbicara\nTanpa kata, tanpa suara\nSetiap jeda penuh makna\nYang tak sempat terucap nyata\n\nMereka bilang aku diam\nPadahal hatiku bergemuruh\nBukan bisu, hanya tenggelam\nDalam dunia yang terlalu gaduh\n\nDiamku bukan hampa\nTapi gema yang tak kau dengar\nDetak jantung, hembus napas\nNada yang tak pernah lepas\n\nDiamku bukan akhir\nTapi awal yang lebih dalam\nResonansi dalam diam\nMenembus ruang dan waktu diam-diam\n\nBayang-bayang menari perlahan\nDi ruang kosong penuh kenangan\nKutatap langit tanpa warna\nMencari arti dalam gelap yang bicara\n\nTak perlu teriak tuk mengguncang\nKadang senyap lebih menyentuh\nTanpa ada ini\nKau takkan tahu artinya peluk tanpa peluh\n\nDiamku bukan hampa\nTapi gema yang tak kau dengar\nDetak jantung, hembus napas\nNada yang tak pernah lepas\n\nDiamku bukan akhir\nTapi awal yang lebih dalam\nResonansi dalam diam\nMenembus ruang dan waktu diam-diam\n\nCobalah dengar\nBila hatimu masih peka\nDiam ini bicara\nDengan cara yang tak biasa`,
+                "Runtuh Tanpa Suara": `Langit kelabu di dalam dadaku\nLangkahku berat, tapi kau tak tahu\nAku tersenyum di depanmu\nPadahal hatiku nyaris membeku\n\nKau berjalan tanpa menoleh\nAku tenggelam dalam bayangmu\nDan dunia tetap berputar\nMeski aku tak lagi utuh\n\nBahkan tangisku terlalu lirih\nUntuk mengguncang perhatianmu\nAku runtuh tanpa suara\nDi titik terendah, kau tak melihatku\nCinta ini jadi rahasia\nYang hanya aku dan malam tahu\n\nKau tertawa, aku ikut tertawa\nPadahal jiwaku sedang patah\nKau bahagia, aku pura-pura\nMenjadi kuat, meski tak kuasa\n\nAndai kau tahu, betapa aku\nMenunggu satu tatapan darimu\nTapi aku hanyalah bayangan\nYang kau lewati tanpa perasaan\n\nBahkan tangisku terlalu lirih\nUntuk mengguncang perhatianmu\nAku runtuh tanpa suara\nDi titik terendah, kau tak melihatku\nCinta ini jadi rahasia\nYang hanya aku dan malam tahu\nDan mungkin, selamanya begitu...\nAku runtuh...\nTanpa suara...`,
+                "Kilau Tanpa Sorotan": `Langkah kecil di jalan sepi\nTak ada sorot, tak ada tepuk tangan\nNamun hatiku tetap bernyanyi\nKilauku tak butuh panggung besar\n\nKilau tanpa sorotan\nTetap hidup dalam diam\nResonansi yang perlahan\nMengalun di ruang tenang\n\nBayangan jatuh, cahaya redup\nAku masih berdiri, tak perlu bukti\nDalam senyap aku menemukan\nArti hadir tanpa keramaian\n\nKilau tanpa sorotan\nTetap hidup dalam diam\nResonansi yang perlahan\nMengalun di ruang tenang\n\nTak semua harus terlihat\nTak semua harus terdengar\nAda indah yang sederhana\nAda damai tanpa suara\n\nKilauku… tetap ada\nMeski tanpa sorotan\nResonansi… dalam diam\nMengikat jiwa perlahan`,
+                "Gelombang Terakhir": `Di tepi senja aku menunggu\nGelombang terakhir datang membisu\nAngin berbisik, waktu pun layu\nNada sederhana, hati pun luluh\n\nGelombang terakhir, bawa aku pergi\nTemani langkah, temani mimpi\nKita hanyut, tanpa janji lagi\nGelombang terakhir, aku percaya diri\n\nLangkah kecil di pasir yang hilang\nJejakmu samar, tapi tetap tenang\nCahaya redup, tak perlu terang\nRitme sederhana, rasa pun datang\n\nGelombang terakhir, bawa aku pergi\nTemani langkah, temani mimpi\nKita hanyut, tanpa janji lagi\nGelombang terakhir, aku percaya diri\n\nTak ada kata, hanya rasa\nMengalir pelan, seperti nada\nGelombang terakhir, aku percaya\nDiam pun bisa jadi suara\n\nGelombang terakhir…\nGelombang terakhir…\nTemani aku sampai tenang…`
+            };
+
+            // Elemen DOM
+            const audio = document.getElementById('audio-engine');
+            const playBtn = document.getElementById('play-trigger');
+            const playIcon = document.getElementById('play-icon');
+            const playbackStatus = document.getElementById('playback-status');
+            const lyricsDiv = document.getElementById('lyrics-display');
+            const progFill = document.getElementById('progress-fill');
+            const rotatingName = document.getElementById('rotating-name');
+            const displayTitle = document.getElementById('display-title');
+            const displayAlbum = document.getElementById('display-album');
+            const searchInput = document.getElementById('search-input');
+            
+            let currentIndex = 0;
+            let isShuffle = false, isRepeat = false;
+            let fallbackAttempted = false;
+            let lyricsTimeout = null;
+
+            // --- VISUALIZER ---
+            let audioCtx, analyser, source, visualizerRunning = false;
+            const canvas = document.getElementById('audio-visualizer');
+            let canvasCtx = canvas ? canvas.getContext('2d') : null;
+
+            function initVisualizer() {
+                if (visualizerRunning || !canvas || !canvasCtx) return;
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 256;
+                    const bufferLength = analyser.frequencyBinCount;
+                    const dataArray = new Uint8Array(bufferLength);
+
+                    source = audioCtx.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+
+                    visualizerRunning = true;
+
+                    function draw() {
+                        if (!visualizerRunning) return;
+                        requestAnimationFrame(draw);
+                        analyser.getByteFrequencyData(dataArray);
+                        canvasCtx.fillStyle = '#0a0a0a';
+                        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                        const barWidth = (canvas.width / bufferLength) * 2.5;
+                        let x = 0;
+                        for (let i = 0; i < bufferLength; i++) {
+                            const barHeight = dataArray[i] / 2;
+                            canvasCtx.fillStyle = `rgb(${255}, ${215 + barHeight * 0.2}, 0)`;
+                            canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                            x += barWidth + 1;
                         }
+                    }
+                    draw();
+                } catch (e) {
+                    console.warn('Visualizer gagal:', e);
+                }
+            }
+
+            // Resume audio context jika suspend (kebijakan browser)
+            audio.addEventListener('play', () => {
+                if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                } else if (!visualizerRunning) {
+                    initVisualizer();
+                }
+            });
+
+            // --- MEDIA SESSION API ---
+            function updateMediaSession() {
+                if ('mediaSession' in navigator) {
+                    const song = rawSongs[currentIndex];
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: song.name,
+                        artist: 'Muhaajir',
+                        album: song.group,
+                        artwork: [
+                            { src: 'https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png', sizes: '512x512', type: 'image/png' }
+                        ]
+                    });
+                    navigator.mediaSession.setActionHandler('play', () => audio.play());
+                    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+                    navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prev-btn').click());
+                    navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('next-btn').click());
+                    navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                        audio.currentTime = Math.max(audio.currentTime - (details.seekOffset || 10), 0);
+                    });
+                    navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                        audio.currentTime = Math.min(audio.currentTime + (details.seekOffset || 10), audio.duration);
                     });
                 }
-                
-                container.appendChild(item);
-            });
-        }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function copyToClipboard(text) {
-            if (!text) return;
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    temporaryMessage("✅ Tautan pemutar disalin!", 2000);
-                }).catch(() => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
             }
-        }
 
-        function fallbackCopy(text) {
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                temporaryMessage("✅ Tautan pemutar disalin!", 2000);
-            } catch (e) {
-                temporaryMessage('❌ Gagal menyalin', 2000, true);
-            }
-        }
+            // --- KEYBOARD SHORTCUTS ---
+            window.addEventListener('keydown', (e) => {
+                // Abaikan jika sedang mengetik di input
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-        // --- LOGIKA PLAYER ---
-        function init() {
-            if (songs.length === 0) {
-                if (playbackStatus) {
-                    playbackStatus.textContent = '❌ Error: Tidak ada lagu tersedia';
-                    playbackStatus.classList.add('error-message');
+                switch (e.key) {
+                    case ' ':
+                        e.preventDefault();
+                        playBtn.click();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        document.getElementById('prev-btn').click();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        document.getElementById('next-btn').click();
+                        break;
                 }
-                return;
-            }
-            
-            renderPlaylist();
-            
-            const savedIndex = getSavedIndex();
-            loadTrack(savedIndex >= 0 && savedIndex < songs.length ? savedIndex : 0, false);
-            
-            setupEventListeners();
-        }
+            });
 
-        function setupEventListeners() {
-            if (!audio || !playBtn) return;
-
-            playBtn.addEventListener('click', () => {
-                try {
-                    if (songs.length === 0) {
-                        temporaryMessage('❌ Tidak ada lagu', 2000, true);
-                        return;
+            // --- SEARCH FILTER ---
+            function filterPlaylist() {
+                const query = searchInput.value.toLowerCase();
+                const items = document.querySelectorAll('.track-item');
+                items.forEach(item => {
+                    const name = item.querySelector('.t-name').textContent.toLowerCase();
+                    if (name.includes(query)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
                     }
+                });
+                // Sembunyikan group label jika semua item di dalamnya tersembunyi
+                const groups = document.querySelectorAll('.group-label');
+                groups.forEach(group => {
+                    let next = group.nextElementSibling;
+                    let hasVisible = false;
+                    while (next && !next.classList.contains('group-label')) {
+                        if (next.style.display !== 'none') {
+                            hasVisible = true;
+                            break;
+                        }
+                        next = next.nextElementSibling;
+                    }
+                    group.style.display = hasVisible ? 'block' : 'none';
+                });
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', filterPlaylist);
+            }
+
+            // --- DROPDOWN MENU HANDLER ---
+            function closeAllDropdowns() {
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => menu.classList.remove('show'));
+            }
+
+            function toggleDropdown(btn) {
+                const menu = btn.nextElementSibling;
+                if (menu && menu.classList.contains('dropdown-menu')) {
+                    menu.classList.toggle('show');
+                    // Close other dropdowns
+                    document.querySelectorAll('.dropdown-menu.show').forEach(m => {
+                        if (m !== menu) m.classList.remove('show');
+                    });
+                }
+            }
+
+            // Click outside to close dropdowns
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown-container')) {
+                    closeAllDropdowns();
+                }
+            });
+
+            function tempStatus(msg, isError = false, dur = 2000) {
+                if (!playbackStatus) return;
+                if (lyricsTimeout) clearTimeout(lyricsTimeout);
+                playbackStatus.textContent = msg;
+                if (isError) playbackStatus.classList.add('error-message');
+                lyricsTimeout = setTimeout(() => {
+                    playbackStatus.textContent = audio.paused ? '⏸️ Menjeda' : '▶️ Memutar...';
+                    playbackStatus.classList.remove('error-message');
+                }, dur);
+            }
+
+            function formatTime(s) {
+                if (isNaN(s) || !isFinite(s) || s < 0) return '0:00';
+                let m = Math.floor(s / 60);
+                let sec = Math.floor(s % 60);
+                return m + ':' + sec.toString().padStart(2, '0');
+            }
+
+            function updateLyrics() {
+                if (!lyricsDiv) return;
+                if (currentIndex >= 0 && rawSongs[currentIndex]) {
+                    const songName = rawSongs[currentIndex].name;
+                    lyricsDiv.textContent = lyricsMap[songName] || `🎵 ${songName}\n\nLirik menyusul. Nikmati instrumen.`;
+                } else {
+                    lyricsDiv.textContent = "🎧 Pilih kaset dari rak untuk memutar suara.";
+                }
+                lyricsDiv.scrollTop = 0;
+            }
+
+            function renderPlaylist() {
+                const container = document.getElementById('playlist-inject');
+                if (!container) return;
+                container.innerHTML = '';
+                let lastGroup = '';
+                rawSongs.forEach((s, i) => {
+                    if (s.group !== lastGroup) {
+                        lastGroup = s.group;
+                        const lbl = document.createElement('div');
+                        lbl.className = 'group-label';
+                        lbl.innerText = s.group;
+                        container.appendChild(lbl);
+                    }
+                    const item = document.createElement('div');
+                    item.className = 'track-item';
+                    item.dataset.index = i;
                     
-                    if (audio.paused) {
-                        audio.play().catch(err => {
-                            temporaryMessage('❌ Gagal memutar: ' + err.message, 3000, true);
+                    // Buat dropdown menu
+                    const dropdownHTML = `
+                        <span class="t-num">${(i+1).toString().padStart(2,'0')}</span>
+                        <span class="t-name">${escapeHtml(s.name)}</span>
+                        <div class="dropdown-container">
+                            <button class="dropdown-btn" onclick="event.stopPropagation(); toggleDropdown(this)">⋮</button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item copy-link" data-copy="https://hajirmuhaajir.github.io/muhaajirmusicplayers"><i>🔗</i> Salin Tautan Player</button>
+                                <a href="https://drive.google.com/uc?export=download&id=${s.gdId}" class="dropdown-item" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i>⬇️</i> Unduh (Google Drive)</a>
+                                <a href="${s.url.replace('&raw=1', '&dl=1')}" class="dropdown-item" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i>⬇️</i> Unduh (Dropbox)</a>
+                            </div>
+                        </div>
+                    `;
+                    item.innerHTML = dropdownHTML;
+
+                    // Event listener untuk memuat lagu saat item diklik (kecuali dropdown)
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.closest('.dropdown-container')) {
+                            loadTrack(i);
+                        }
+                    });
+
+                    // Event listener untuk tombol salin di dropdown
+                    const copyBtn = item.querySelector('.copy-link');
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            copyToClipboard(e.currentTarget.dataset.copy);
                         });
-                    } else {
-                        audio.pause();
                     }
-                } catch (e) {
-                    temporaryMessage('❌ Error: ' + e.message, 2000, true);
-                }
-            });
 
-            const nextBtn = document.getElementById('next-btn');
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    if (songs.length === 0 || currentIndex === -1) return;
-                    let next;
-                    if (isShuffle) {
-                        do {
-                            next = Math.floor(Math.random() * songs.length);
-                        } while (next === currentIndex && songs.length > 1);
-                    } else {
-                        next = (currentIndex + 1) % songs.length;
-                    }
-                    loadTrack(next);
+                    container.appendChild(item);
                 });
+
+                // Re-attach dropdown toggle function globally
+                window.toggleDropdown = toggleDropdown;
             }
 
-            const prevBtn = document.getElementById('prev-btn');
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
-                    if (songs.length === 0 || currentIndex === -1) return;
-                    let prev = (currentIndex - 1 + songs.length) % songs.length;
-                    loadTrack(prev);
-                });
+            function escapeHtml(t) { return document.createElement('div').appendChild(document.createTextNode(t)).parentNode.innerHTML; }
+            function copyToClipboard(t) {
+                if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => tempStatus('✅ Tautan disalin!', false, 1500));
+                else tempStatus('❌ Gagal menyalin', true);
             }
 
-            const shuffleBtn = document.getElementById('shuffle-btn');
-            if (shuffleBtn) {
-                shuffleBtn.addEventListener('click', (e) => {
-                    isShuffle = !isShuffle;
-                    e.currentTarget.classList.toggle('active', isShuffle);
-                    temporaryMessage(isShuffle ? "🔀 Mode Acak Aktif" : "▶️ Mode Berurutan Aktif", 1500);
-                });
+            function getGoogleDriveUrl(id) {
+                return `https://drive.google.com/uc?export=download&id=${id}`;
             }
 
-            const repeatBtn = document.getElementById('repeat-btn');
-            if (repeatBtn) {
-                repeatBtn.addEventListener('click', (e) => {
-                    isRepeat = !isRepeat;
-                    e.currentTarget.classList.toggle('active', isRepeat);
-                    temporaryMessage(isRepeat ? "🔁 Mengulang Satu Lagu" : "⏭️ Putar Terus", 1500);
-                });
-            }
+            function loadTrack(index, autoPlay = true, useFallback = false) {
+                if (index < 0 || index >= rawSongs.length) return;
+                const song = rawSongs[index];
+                currentIndex = index;
+                fallbackAttempted = useFallback;
 
-            const volSlider = document.getElementById('vol-slider');
-            if (volSlider && audio) {
-                volSlider.addEventListener('input', (e) => {
-                    audio.volume = Math.min(1, Math.max(0, parseFloat(e.target.value) || 0));
-                });
-            }
+                let src = useFallback ? getGoogleDriveUrl(song.gdId) : song.url;
+                audio.pause();
+                audio.src = src;
+                audio.load();
 
-            const progRoot = document.getElementById('prog-root');
-            if (progRoot && audio) {
-                progRoot.addEventListener('click', (e) => {
-                    if (audio.duration && isFinite(audio.duration)) {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const percent = (e.clientX - rect.left) / rect.width;
-                        audio.currentTime = percent * audio.duration;
-                    }
-                });
-            }
-
-            if (audio) {
-                audio.addEventListener('play', () => {
-                    if (playIcon) {
-                        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-                    }
-                    updateStatus("▶️ Memutar...");
-                });
-
-                audio.addEventListener('pause', () => {
-                    if (playIcon) {
-                        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-                    }
-                    updateStatus("⏸️ Menjeda");
-                });
-
-                audio.addEventListener('timeupdate', updateProgress);
-                
-                audio.addEventListener('ended', () => {
-                    if (isRepeat) {
-                        audio.play().catch(() => {});
-                    } else {
-                        const nextBtn = document.getElementById('next-btn');
-                        if (nextBtn) nextBtn.click();
-                    }
-                });
-
-                audio.addEventListener('loadedmetadata', () => {
-                    const timeEnd = document.getElementById('time-end');
-                    if (timeEnd) {
-                        timeEnd.innerText = formatTime(audio.duration);
-                    }
-                    isLoading = false;
-                    playBtn.classList.remove('audio-loading');
-                });
-
-                audio.addEventListener('error', (e) => {
-                    console.error('Audio error:', e);
-                    temporaryMessage('❌ Gagal memuat audio. Coba lagi.', 3000, true);
-                    isLoading = false;
-                    playBtn.classList.remove('audio-loading');
-                });
-
-                audio.addEventListener('loadstart', () => {
-                    isLoading = true;
-                    playBtn.classList.add('audio-loading');
-                });
-            }
-        }
-
-        function loadTrack(index, autoplay = true) {
-            if (index < 0 || index >= songs.length || !audio) return;
-            
-            const song = songs[index];
-            if (!song || !song.url || !isValidUrl(song.url)) {
-                temporaryMessage('❌ URL audio tidak valid', 3000, true);
-                return;
-            }
-            
-            currentIndex = index;
-            
-            audio.pause();
-            audio.src = song.url;
-            audio.load();
-
-            if (displayTitle) displayTitle.innerText = song.name;
-            if (displayAlbum) displayAlbum.innerText = song.group;
-            
-            displayLyrics(); // perbarui lirik
-            
-            document.querySelectorAll('.track-item').forEach((item, i) => {
-                item.classList.toggle('active', i === index);
-            });
-
-            try {
+                displayTitle.innerText = song.name;
+                displayAlbum.innerText = song.group;
+                updateLyrics();
+                document.querySelectorAll('.track-item').forEach((el, i) => el.classList.toggle('active', i === index));
                 localStorage.setItem('muhaajir_last_v2', index);
-            } catch (e) {}
 
-            if (autoplay) {
-                audio.play().catch((err) => {
-                    console.warn('Autoplay failed:', err);
-                    temporaryMessage("🔊 Tekan PLAY untuk memulai suara.", 3000);
+                // Update Media Session
+                updateMediaSession();
+
+                if (autoPlay) {
+                    audio.play().catch(() => {
+                        if (!useFallback) tempStatus('🔊 Tekan play untuk mulai', false, 3000);
+                    });
+                } else {
+                    playbackStatus.textContent = '⏸️ Menjeda';
+                }
+            }
+
+            audio.addEventListener('error', (e) => {
+                if (currentIndex < 0) return;
+                const song = rawSongs[currentIndex];
+                if (!fallbackAttempted && song && song.gdId) {
+                    fallbackAttempted = true;
+                    tempStatus('⚠️ Gagal sumber utama, beralih ke cadangan...', false, 2000);
+                    audio.pause();
+                    audio.src = getGoogleDriveUrl(song.gdId);
+                    audio.load();
+                    audio.play().catch(() => {
+                        tempStatus('❌ Sumber cadangan juga gagal.', true, 3000);
+                    });
+                } else {
+                    tempStatus('❌ Tidak dapat memutar lagu.', true, 3000);
+                }
+            });
+
+            const names = ["Muhaajir", "Suni", "Brava", "Niva", "Ricerca", "Genio", "Chopi", "Chita", "Hajir", "Regina"];
+            let nameIdx = 0;
+            setInterval(() => {
+                if (rotatingName) {
+                    nameIdx = (nameIdx + 1) % names.length;
+                    rotatingName.style.opacity = '0';
+                    setTimeout(() => {
+                        rotatingName.innerText = names[nameIdx];
+                        rotatingName.style.opacity = '1';
+                    }, 150);
+                }
+            }, 1300);
+
+            function init() {
+                if (!rawSongs.length) return;
+                renderPlaylist();
+                const saved = parseInt(localStorage.getItem('muhaajir_last_v2') || '0');
+                loadTrack(saved >= 0 && saved < rawSongs.length ? saved : 0, false);
+
+                playBtn.addEventListener('click', () => {
+                    if (audio.paused) audio.play().catch(e => tempStatus('❌ Gagal main', true));
+                    else audio.pause();
                 });
-            } else {
-                // Set status awal (pause)
-                updateStatus("⏸️ Menjeda");
+                document.getElementById('next-btn').addEventListener('click', () => {
+                    let n = isShuffle ? Math.floor(Math.random() * rawSongs.length) : (currentIndex + 1) % rawSongs.length;
+                    loadTrack(n);
+                });
+                document.getElementById('prev-btn').addEventListener('click', () => {
+                    let p = (currentIndex - 1 + rawSongs.length) % rawSongs.length;
+                    loadTrack(p);
+                });
+                document.getElementById('shuffle-btn').addEventListener('click', (e) => {
+                    isShuffle = !isShuffle;
+                    e.target.classList.toggle('active', isShuffle);
+                    tempStatus(isShuffle ? '🔀 Acak aktif' : '▶️ Normal', false, 1200);
+                });
+                document.getElementById('repeat-btn').addEventListener('click', (e) => {
+                    isRepeat = !isRepeat;
+                    e.target.classList.toggle('active', isRepeat);
+                    tempStatus(isRepeat ? '🔁 Ulang satu' : '⏭️ Lanjut', false, 1200);
+                });
+                document.getElementById('vol-slider').addEventListener('input', (e) => { audio.volume = e.target.value; });
+                document.getElementById('prog-root').addEventListener('click', (e) => {
+                    if (audio.duration) {
+                        const r = e.currentTarget.getBoundingClientRect();
+                        audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+                    }
+                });
+
+                audio.addEventListener('play', () => {
+                    playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    playbackStatus.textContent = '▶️ Memutar...';
+                });
+                audio.addEventListener('pause', () => {
+                    playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                    playbackStatus.textContent = '⏸️ Menjeda';
+                });
+                audio.addEventListener('timeupdate', () => {
+                    if (audio.duration) {
+                        progFill.style.width = (audio.currentTime / audio.duration) * 100 + '%';
+                        document.getElementById('time-now').innerText = formatTime(audio.currentTime);
+                        document.getElementById('time-end').innerText = formatTime(audio.duration);
+                    }
+                });
+                audio.addEventListener('ended', () => {
+                    if (isRepeat) audio.play().catch(() => {});
+                    else document.getElementById('next-btn').click();
+                });
+
+                // Inisialisasi visualizer jika audio sudah siap (misal autoplay tidak aktif, kita tunggu play)
             }
-        }
 
-        function updateProgress() {
-            if (audio && audio.duration && isFinite(audio.duration)) {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                if (progFill) {
-                    progFill.style.width = percent + '%';
-                }
-                const timeNow = document.getElementById('time-now');
-                if (timeNow) {
-                    timeNow.innerText = formatTime(audio.currentTime);
-                }
-            }
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        function getSavedIndex() {
-            try {
-                const saved = localStorage.getItem('muhaajir_last_v2');
-                const parsed = saved ? parseInt(saved) : 0;
-                return (parsed >= 0 && parsed < songs.length) ? parsed : 0;
-            } catch {
-                return 0;
-            }
-        }
-
-        // Mulai aplikasi
-        init();
-    })();
-</script>
-
-<!-- Perubahan:
-     - Status playback dipisah ke elemen #playback-status
-     - Lirik dipindah ke elemen #lyrics-display
-     - Fungsi updateStatus hanya mengubah playback-status
-     - temporaryMessage mengubah playback-status sementara lalu kembali ke status pemutaran
-     - displayLyrics hanya mengubah lyrics-display
--->
+            init();
+        })();
+    </script>
 </body>
 </html>
