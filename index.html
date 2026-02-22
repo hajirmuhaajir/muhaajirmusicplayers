@@ -54,7 +54,7 @@
     
     <title>muhaajir music players</title>
     <style>
-        /* ----- RESET & VARIABEL PREMIUM ----- */
+        /* ----- RESET & VARIABEL PREMIUM (DEFAULT DARK) ----- */
         * {
             margin: 0;
             padding: 0;
@@ -62,6 +62,7 @@
         }
 
         :root {
+            /* Dark mode (default) */
             --bg-deep: #0a0a0a;
             --panel-charcoal: #141414;
             --gold-primary: #ffd700;
@@ -72,6 +73,31 @@
             --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             --shadow-glow: 0 0 15px rgba(255, 215, 0, 0.2);
             --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --dropdown-bg: #1e1e1e;
+            --hover-bg: #222;
+            --active-bg: #1e1e1e;
+            --visualizer-bg: #0a0a0a;
+            --scrollbar-thumb: var(--gold-primary);
+            --scrollbar-track: #1e1e1e;
+        }
+
+        /* Light mode */
+        :root[data-theme="light"] {
+            --bg-deep: #f5f5f5;
+            --panel-charcoal: #ffffff;
+            --gold-primary: #b8860b;
+            --text-bright: #1a1a1a;
+            --text-subtle: #4a5568;
+            --border-dim: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --shadow-heavy: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 15px rgba(184, 134, 11, 0.2);
+            --dropdown-bg: #ffffff;
+            --hover-bg: #f0f0f0;
+            --active-bg: #fafafa;
+            --visualizer-bg: #e0e0e0;
+            --scrollbar-thumb: #b8860b;
+            --scrollbar-track: #e0e0e0;
         }
 
         body {
@@ -87,6 +113,7 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             position: relative;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* ----- LOGIN SCREEN (SPLASH) ----- */
@@ -117,6 +144,9 @@
             margin-bottom: 32px;
             filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(255,215,0,0.5));
             animation: softPulse 2s infinite ease-in-out;
+        }
+        :root[data-theme="light"] .login-logo {
+            filter: brightness(0) invert(0) drop-shadow(0 0 20px rgba(184,134,11,0.3));
         }
         .login-spinner {
             width: 48px;
@@ -160,6 +190,9 @@
             width: auto;
             filter: brightness(0) invert(1);
         }
+        :root[data-theme="light"] .header-logo {
+            filter: brightness(0) invert(0);
+        }
         .header-clock {
             font-family: 'JetBrains Mono', monospace;
             font-size: 1.2rem;
@@ -172,6 +205,33 @@
             backdrop-filter: blur(4px);
             letter-spacing: 2px;
             box-shadow: var(--shadow-glow);
+        }
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .theme-toggle {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 40px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(4px);
+        }
+        .theme-toggle:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.05);
+        }
+        .theme-toggle span {
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         /* Master container (seperti sebelumnya) */
@@ -195,16 +255,16 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            background: linear-gradient(145deg, #121212 0%, #0c0c0c 100%);
+            background: linear-gradient(145deg, var(--panel-charcoal) 0%, color-mix(in srgb, var(--panel-charcoal) 90%, black) 100%);
             border-right: 1px solid var(--border-dim);
         }
 
         .tape-rack {
             flex: 0.9;
-            background: #0f0f0f;
+            background: color-mix(in srgb, var(--panel-charcoal) 95%, black);
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #2a2a2a;
+            border-left: 1px solid var(--border-dim);
         }
 
         .brand-logo {
@@ -216,8 +276,10 @@
         .brand-logo img {
             height: 36px;
             width: auto;
-            filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255,215,0,0.2));
-            transition: var(--transition-smooth);
+            filter: brightness(0) invert(1);
+        }
+        :root[data-theme="light"] .brand-logo img {
+            filter: brightness(0) invert(0);
         }
         .brand-logo span {
             font-size: 0.75rem;
@@ -245,6 +307,9 @@
             color: var(--text-bright);
             word-break: break-word;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        :root[data-theme="light"] .song-title-large {
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .meta-row {
@@ -285,20 +350,24 @@
             border-radius: 0 16px 16px 0;
             font-size: 0.9rem;
             line-height: 1.7;
-            color: #e2e8f0;
+            color: var(--text-bright);
             min-height: 160px;
             max-height: 240px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-break: break-word;
             scrollbar-width: thin;
-            scrollbar-color: var(--gold-primary) #1e1e1e;
+            scrollbar-color: var(--gold-primary) var(--scrollbar-track);
             margin: 16px 0 24px 0;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
             -webkit-user-select: text;
             -moz-user-select: text;
             -ms-user-select: text;
             user-select: text;
+        }
+        :root[data-theme="light"] .lyrics-display {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
         .lyrics-display::-webkit-scrollbar {
             width: 5px;
@@ -311,7 +380,7 @@
         .progress-container {
             width: 100%;
             height: 6px;
-            background: #2a2a2a;
+            background: var(--border-dim);
             border-radius: 10px;
             cursor: pointer;
             margin: 20px 0 8px 0;
@@ -319,12 +388,12 @@
         }
         .progress-container:hover {
             height: 8px;
-            background: #333;
+            background: var(--text-subtle);
         }
         #progress-fill {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--gold-primary), #f5e56b);
+            background: linear-gradient(90deg, var(--gold-primary), color-mix(in srgb, var(--gold-primary) 80%, white));
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
@@ -341,11 +410,41 @@
         #audio-visualizer {
             width: 100%;
             height: 60px;
-            background: #0a0a0a;
+            background: var(--visualizer-bg);
             border-radius: 8px;
             margin: 10px 0;
             border: 1px solid rgba(255,215,0,0.2);
             box-shadow: var(--shadow-glow);
+        }
+
+        /* Share button di area pemutar */
+        .share-now-playing {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: flex-end;
+        }
+        .share-btn {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 30px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            backdrop-filter: blur(4px);
+        }
+        .share-btn:hover {
+            background: rgba(255,215,0,0.2);
+            transform: scale(1.05);
+        }
+        .share-btn i {
+            font-size: 1.1rem;
         }
 
         .controls-wrapper {
@@ -355,6 +454,9 @@
             padding: 22px 26px;
             margin-top: 10px;
             backdrop-filter: blur(8px);
+        }
+        :root[data-theme="light"] .controls-wrapper {
+            background: rgba(0,0,0,0.02);
         }
 
         .controls-main {
@@ -400,6 +502,9 @@
             transition: var(--transition-smooth);
             box-shadow: 0 8px 20px rgba(0,0,0,0.6);
         }
+        :root[data-theme="light"] .play-pause-circle {
+            background: var(--gold-primary);
+        }
         .play-pause-circle:hover {
             background: var(--gold-primary);
             transform: scale(1.07);
@@ -429,7 +534,7 @@
             flex: 1;
             height: 4px;
             -webkit-appearance: none;
-            background: #333;
+            background: var(--border-dim);
             border-radius: 10px;
         }
         .volume-integrated input[type=range]::-webkit-slider-thumb {
@@ -457,7 +562,9 @@
         .header-logo img {
             height: 28px;
             filter: brightness(0) invert(0.7);
-            transition: 0.2s;
+        }
+        :root[data-theme="light"] .header-logo img {
+            filter: brightness(0) invert(0.3);
         }
 
         /* Search Box */
@@ -468,7 +575,7 @@
         #search-input {
             width: 100%;
             padding: 10px 16px;
-            background: #1e1e1e;
+            background: var(--panel-charcoal);
             border: 1px solid rgba(255,215,0,0.2);
             border-radius: 30px;
             color: var(--text-bright);
@@ -490,6 +597,14 @@
             overflow-y: auto;
             padding: 12px 8px;
             scrollbar-width: thin;
+            scrollbar-color: var(--gold-primary) var(--scrollbar-track);
+        }
+        .playlist-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .playlist-scroll::-webkit-scrollbar-thumb {
+            background: var(--gold-primary);
+            border-radius: 10px;
         }
         .group-label {
             font-size: 0.7rem;
@@ -510,11 +625,11 @@
             position: relative;
         }
         .track-item:hover {
-            background: #222;
+            background: var(--hover-bg);
             transform: translateX(4px);
         }
         .track-item.active {
-            background: #1e1e1e;
+            background: var(--active-bg);
             border-left: 4px solid var(--gold-primary);
             box-shadow: var(--shadow-glow);
         }
@@ -531,7 +646,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #ddd;
+            color: var(--text-bright);
         }
         .track-item.active .t-name {
             color: var(--gold-primary);
@@ -545,8 +660,8 @@
         }
         .dropdown-btn {
             background: none;
-            border: 1px solid #3a3a3a;
-            color: #ccc;
+            border: 1px solid var(--border-dim);
+            color: var(--text-subtle);
             width: 28px;
             height: 28px;
             border-radius: 50%;
@@ -567,11 +682,11 @@
             position: absolute;
             top: 100%;
             right: 0;
-            background: #1e1e1e;
+            background: var(--dropdown-bg);
             border: 1px solid var(--border-dim);
             border-radius: 8px;
             padding: 6px 0;
-            min-width: 180px;
+            min-width: 200px;
             z-index: 1000;
             display: none;
             box-shadow: var(--shadow-heavy);
@@ -582,7 +697,7 @@
         .dropdown-item {
             padding: 8px 16px;
             font-size: 0.8rem;
-            color: #ddd;
+            color: var(--text-bright);
             text-decoration: none;
             display: block;
             transition: 0.1s;
@@ -593,7 +708,7 @@
             text-align: left;
         }
         .dropdown-item:hover {
-            background: #333;
+            background: var(--hover-bg);
             color: var(--gold-primary);
         }
         .dropdown-item i {
@@ -625,6 +740,9 @@
         .footer-logo img {
             height: 18px;
             filter: brightness(0) invert(0.8);
+        }
+        :root[data-theme="light"] .footer-logo img {
+            filter: brightness(0) invert(0.4);
         }
         .footer-links {
             display: flex;
@@ -658,6 +776,9 @@
         .logo-watermark img {
             height: 40px;
             filter: brightness(0) invert(1);
+        }
+        :root[data-theme="light"] .logo-watermark img {
+            filter: brightness(0) invert(0);
         }
 
         #rotating-name {
@@ -705,6 +826,12 @@
                 font-size: 1rem;
                 padding: 6px 12px;
             }
+            .header-controls {
+                gap: 8px;
+            }
+            .theme-toggle span {
+                display: none;
+            }
         }
 
         .audio-loading::after {
@@ -718,7 +845,6 @@
             animation: spin 0.8s linear infinite;
             margin-left: 8px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
         .error-message { color: #ff8a8a !important; background: rgba(255,80,80,0.1); border-color: #ff5e5e; }
     </style>
 </head>
@@ -729,13 +855,19 @@
         <div class="login-spinner"></div>
     </div>
 
-    <!-- HEADER dengan JAM DIGITAL -->
+    <!-- HEADER dengan JAM DIGITAL & THEME TOGGLE -->
     <header id="mainHeader">
         <div class="header-container">
             <a href="#home" class="logo-link">
                 <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="Muhaajir Logo" class="header-logo" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2248%22%20height%3D%2248%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
             </a>
-            <div class="header-clock" id="clock">--:--</div>
+            <div class="header-controls">
+                <div class="theme-toggle" id="themeToggle">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Gelap</span>
+                </div>
+                <div class="header-clock" id="clock">--:--</div>
+            </div>
         </div>
     </header>
 
@@ -769,6 +901,13 @@
 
                 <!-- AUDIO VISUALIZER CANVAS -->
                 <canvas id="audio-visualizer" width="300" height="60"></canvas>
+
+                <!-- SHARE NOW PLAYING BUTTON -->
+                <div class="share-now-playing">
+                    <button class="share-btn" id="shareNowPlaying">
+                        <i>📱</i> Bagikan Lagu Ini ke WhatsApp
+                    </button>
+                </div>
 
                 <div class="controls-wrapper">
                     <div class="controls-main">
@@ -840,6 +979,54 @@
             updateClock();
             setInterval(updateClock, 1000);
 
+            // --- DARK/LIGHT MODE ---
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            const root = document.documentElement;
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('muhaajir_theme') || 'dark';
+            root.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+
+            function updateThemeButton(theme) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = 'Gelap';
+                } else {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = 'Terang';
+                }
+            }
+
+            function toggleTheme() {
+                const currentTheme = root.getAttribute('data-theme') || 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                root.setAttribute('data-theme', newTheme);
+                localStorage.setItem('muhaajir_theme', newTheme);
+                updateThemeButton(newTheme);
+            }
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // --- FUNGSI SHARE KE WHATSAPP ---
+            function shareToWhatsApp(songName, albumName, songUrl) {
+                // Format pesan yang akan dibagikan
+                const text = `*${songName}*\nAlbum: ${albumName}\n\nDengarkan di muhaajir music players:\n${songUrl}\n\n#muhaajir #musikindie`;
+                
+                // Encode untuk URL
+                const encodedText = encodeURIComponent(text);
+                
+                // Buat URL WhatsApp (bisa untuk web atau app)
+                const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+                
+                // Buka di tab baru
+                window.open(whatsappUrl, '_blank');
+            }
+
             // --- HILANGKAN LOGIN SCREEN SETELAH SEMUA SIAP ---
             window.addEventListener('load', function() {
                 const loginScreen = document.getElementById('loginScreen');
@@ -904,11 +1091,24 @@
             const displayTitle = document.getElementById('display-title');
             const displayAlbum = document.getElementById('display-album');
             const searchInput = document.getElementById('search-input');
+            const shareNowPlaying = document.getElementById('shareNowPlaying');
             
             let currentIndex = 0;
             let isShuffle = false, isRepeat = false;
             let fallbackAttempted = false;
             let lyricsTimeout = null;
+
+            // --- SHARE NOW PLAYING ---
+            if (shareNowPlaying) {
+                shareNowPlaying.addEventListener('click', () => {
+                    const song = rawSongs[currentIndex];
+                    if (song) {
+                        shareToWhatsApp(song.name, song.group, window.location.href);
+                    } else {
+                        tempStatus('❌ Tidak ada lagu yang diputar', true, 2000);
+                    }
+                });
+            }
 
             // --- VISUALIZER ---
             let audioCtx, analyser, source, visualizerRunning = false;
@@ -934,7 +1134,7 @@
                         if (!visualizerRunning) return;
                         requestAnimationFrame(draw);
                         analyser.getByteFrequencyData(dataArray);
-                        canvasCtx.fillStyle = '#0a0a0a';
+                        canvasCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--visualizer-bg').trim() || '#0a0a0a';
                         canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
                         const barWidth = (canvas.width / bufferLength) * 2.5;
                         let x = 0;
@@ -1116,6 +1316,7 @@
                                 <button class="dropdown-item copy-link" data-copy="https://hajirmuhaajir.github.io/muhaajirmusicplayers"><i>🔗</i> Salin Tautan Player</button>
                                 <a href="https://drive.google.com/uc?export=download&id=${s.gdId}" class="dropdown-item" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i>⬇️</i> Unduh (Google Drive)</a>
                                 <a href="${s.url.replace('&raw=1', '&dl=1')}" class="dropdown-item" target="_blank" rel="noopener" onclick="event.stopPropagation()"><i>⬇️</i> Unduh (Dropbox)</a>
+                                <button class="dropdown-item share-wa" data-song="${escapeHtml(s.name)}" data-album="${escapeHtml(s.group)}"><i>📱</i> Bagikan ke WhatsApp</button>
                             </div>
                         </div>
                     `;
@@ -1137,6 +1338,17 @@
                         });
                     }
 
+                    // Event listener untuk tombol share WhatsApp
+                    const shareBtn = item.querySelector('.share-wa');
+                    if (shareBtn) {
+                        shareBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const songName = e.currentTarget.dataset.song;
+                            const albumName = e.currentTarget.dataset.album;
+                            shareToWhatsApp(songName, albumName, window.location.href);
+                        });
+                    }
+
                     container.appendChild(item);
                 });
 
@@ -1144,7 +1356,10 @@
                 window.toggleDropdown = toggleDropdown;
             }
 
-            function escapeHtml(t) { return document.createElement('div').appendChild(document.createTextNode(t)).parentNode.innerHTML; }
+            function escapeHtml(t) { 
+                return document.createElement('div').appendChild(document.createTextNode(t)).parentNode.innerHTML; 
+            }
+            
             function copyToClipboard(t) {
                 if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => tempStatus('✅ Tautan disalin!', false, 1500));
                 else tempStatus('❌ Gagal menyalin', true);
@@ -1268,8 +1483,6 @@
                     if (isRepeat) audio.play().catch(() => {});
                     else document.getElementById('next-btn').click();
                 });
-
-                // Inisialisasi visualizer jika audio sudah siap (misal autoplay tidak aktif, kita tunggu play)
             }
 
             init();
