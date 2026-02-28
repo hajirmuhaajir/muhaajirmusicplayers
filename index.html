@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   
-  <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';">
 
-  <!-- Favicon & Manifest -->
   <link rel="icon" type="image/png" href="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png">
   <link rel="manifest" href="data:application/manifest+json,{
     \"name\": \"Muhaajir Music Player\",
@@ -48,14 +46,13 @@
       --shadow-glow: 0 0 15px rgba(255, 215, 0, 0.2);
       --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       --dropdown-bg: #1e1e1e;
-      --hover-bg: #222;
+      --hover-bg: #2a2a2a;
       --active-bg: #1e1e1e;
       --scrollbar-thumb: var(--gold-primary);
       --scrollbar-track: #1e1e1e;
       --font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Proteksi seleksi hanya pada elemen lirik dan judul */
     .lyrics-display, .song-title-large {
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -76,8 +73,26 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      /* Radial gradient menggunakan variabel warna utama */
+      background: radial-gradient(circle at 50% 50%, var(--gold-primary) 0%, transparent 70%);
+      opacity: 0.05; 
+      pointer-events: none;
+      z-index: -1;
+      transition: background 1s ease; /* Transisi halus saat ganti warna lagu */
+      
+      /* Efek denyut jantung biar player terasa "hidup" */
+      animation: bgPulse 8s infinite ease-in-out;
+    }
 
-    /* LOGIN SCREEN */
+    @keyframes bgPulse {
+      0%, 100% { transform: scale(1); opacity: 0.03; }
+      50% { transform: scale(1.2); opacity: 0.06; }
+    }
+    /* LOGIN SCREEN (tetap sama) */
     .login-screen {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -118,36 +133,37 @@
 
     /* Master container */
     .master-container {
-      width: min(1200px, 96vw);
+      width: min(1400px, 96vw);
       background: var(--glass-bg);
       border: 1px solid rgba(255,215,0,0.15);
       border-radius: 32px;
-      overflow: hidden;
+      overflow: visible;          /* DULU hidden, sekarang visible agar dropdown tidak kepotong */
       display: flex;
-      flex-direction: row;
+      flex-direction: column;     /* default mobile: kolom */
       box-shadow: var(--shadow-heavy);
       margin-bottom: 20px;
       transition: var(--transition-smooth);
     }
 
+    /* Untuk layar lebar, sisi-sisi */
     .resonance-chamber {
-      flex: 1.3;
       padding: 40px 36px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       background: linear-gradient(145deg, #141414 0%, #0a0a0a 100%);
-      border-right: 1px solid rgba(255,215,0,0.1);
+      border-right: none; /* di mobile tidak ada border */
     }
 
     .tape-rack {
-      flex: 0.9;
       background: #0a0a0a;
       display: flex;
       flex-direction: column;
-      border-left: 1px solid rgba(255,215,0,0.1);
+      border-left: none;
+      border-top: 1px solid rgba(255,215,0,0.1);
     }
 
+    /* Brand, dll (tidak berubah) */
     .brand-logo {
       display: flex; align-items: center; gap: 10px; margin-bottom: 24px;
     }
@@ -190,7 +206,7 @@
       margin-right: auto;
     }
 
-    /* ===== VISUALIZER - 3 VARIASI GERAKAN + GLOW ===== */
+    /* VISUALIZER — dengan transisi opacity lebih halus */
     .fake-vis-container {
       display: flex;
       align-items: flex-end;
@@ -199,7 +215,7 @@
       height: 50px;
       margin: 20px auto;
       opacity: 0;
-      transition: opacity 0.8s ease; /* Durasi pudar disesuaikan dengan fade audio */
+      transition: opacity 0.8s ease;
     }
 
     .fake-vis-container.active {
@@ -215,25 +231,14 @@
       width: 5px;
       background: var(--gold-primary);
       border-radius: 4px;
-      /* Efek glow biar lebih hidup */
       box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
       transition: opacity 0.3s ease;
-      height: 8px; /* tinggi dasar */
+      height: 8px;
     }
 
-    /* Tiga variasi gerakan biar gak kompak */
-    @keyframes bounceShort {
-      0% { height: 5px; }
-      100% { height: 20px; }
-    }
-    @keyframes bounceMedium {
-      0% { height: 5px; }
-      100% { height: 35px; }
-    }
-    @keyframes bounceTall {
-      0% { height: 8px; }
-      100% { height: 45px; }
-    }
+    @keyframes bounceShort { 0% { height: 5px; } 100% { height: 20px; } }
+    @keyframes bounceMedium { 0% { height: 5px; } 100% { height: 35px; } }
+    @keyframes bounceTall { 0% { height: 8px; } 100% { height: 45px; } }
 
     .fake-vis-container.active .vis-bar {
       animation-iteration-count: infinite;
@@ -241,18 +246,17 @@
       animation-timing-function: ease-in-out;
     }
 
-    /* Acak nasib tiap batang secara brutal biar gak simetris */
     .vis-bar:nth-child(1) { animation-name: bounceMedium; animation-duration: 0.5s; }
     .vis-bar:nth-child(2) { animation-name: bounceTall;   animation-duration: 0.8s; animation-delay: 0.2s; }
     .vis-bar:nth-child(3) { animation-name: bounceShort;  animation-duration: 0.4s; }
     .vis-bar:nth-child(4) { animation-name: bounceMedium; animation-duration: 0.7s; animation-delay: 0.1s; }
-    .vis-bar:nth-child(5) { animation-name: bounceTall;   animation-duration: 0.6s; } /* Tengah */
+    .vis-bar:nth-child(5) { animation-name: bounceTall;   animation-duration: 0.6s; }
     .vis-bar:nth-child(6) { animation-name: bounceShort;  animation-duration: 0.9s; animation-delay: 0.3s; }
     .vis-bar:nth-child(7) { animation-name: bounceMedium; animation-duration: 0.5s; }
     .vis-bar:nth-child(8) { animation-name: bounceTall;   animation-duration: 0.7s; animation-delay: 0.4s; }
     .vis-bar:nth-child(9) { animation-name: bounceShort;  animation-duration: 0.6s; }
 
-    /* Lyrics container dengan efek gradasi - RATA TENGAH */
+    /* Lyrics */
     .lyrics-display {
       background: rgba(0, 0, 0, 0.5);
       border-left: 3px solid var(--gold-primary);
@@ -287,14 +291,9 @@
       line-height: 1.6;
       margin-bottom: 4px;
       font-size: 0.95rem;
-      pointer-events: auto;
       text-align: center;
     }
-
-    .lyric-paragraph-space {
-      height: 10px;
-      display: block;
-    }
+    .lyric-paragraph-space { height: 10px; display: block; }
 
     /* Progress bar */
     .progress-container {
@@ -314,7 +313,7 @@
       margin-bottom: 18px;
     }
 
-    /* Kontrol dengan gambar */
+    /* Controls */
     .controls-wrapper {
       background: rgba(255,255,255,0.02); border: 1px solid rgba(255,215,0,0.15);
       border-radius: 28px; padding: 22px 26px; margin-top: 10px;
@@ -330,7 +329,11 @@
       width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
       border-radius: 50%;
     }
-    .btn-core:hover { background: rgba(255,255,255,0.05); transform: scale(1.1); }
+    .btn-core:hover { 
+      background: rgba(255,215,0,0.15); 
+      transform: scale(1.15) translateY(-2px);
+      box-shadow: 0 8px 15px rgba(255,215,0,0.3);
+    }
     .btn-core.active { background: rgba(255,215,0,0.2); }
 
     .play-pause-circle {
@@ -339,7 +342,7 @@
       transition: var(--transition-smooth); box-shadow: 0 8px 20px rgba(0,0,0,0.6);
     }
     .play-pause-circle:hover {
-      background: var(--gold-primary); transform: scale(1.07);
+      background: var(--gold-primary); transform: scale(1.1) rotate(2deg);
       box-shadow: 0 0 30px var(--gold-primary);
     }
     .play-pause-circle img { width: 32px; height: 32px; }
@@ -362,47 +365,111 @@
       border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px gold;
     }
 
-    /* Dropdown Download */
-    .download-container {
-      position: relative;
-      display: inline-block;
+    /* ===== MODAL DOWNLOAD (BARU) ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
-    .download-dropdown {
-      position: absolute;
-      bottom: 50px;
-      right: 0;
+    .modal-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .download-modal {
       background: var(--dropdown-bg);
       border: 1px solid var(--gold-primary);
-      border-radius: 12px;
-      padding: 8px 0;
-      min-width: 200px;
-      box-shadow: var(--shadow-heavy);
-      z-index: 200;
-      display: none;
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: min(400px, 90vw);
+      box-shadow: var(--shadow-heavy), 0 0 30px rgba(255,215,0,0.3);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
     }
-    .download-dropdown.show { display: block; }
-
-    .download-option {
-      display: block;
-      padding: 12px 16px;
-      color: var(--text-bright);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: background 0.2s;
-      border-bottom: 1px solid rgba(255,215,0,0.1);
+    .modal-overlay.show .download-modal {
+      transform: scale(1);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,215,0,0.2);
+    }
+    .modal-header h3 {
+      color: var(--gold-primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-subtle);
+      font-size: 28px;
+      line-height: 1;
       cursor: pointer;
+      padding: 0 8px;
+      transition: color 0.2s;
     }
-    .download-option:last-child { border-bottom: none; }
-    .download-option:hover {
-      background: var(--hover-bg);
+    .modal-close:hover {
       color: var(--gold-primary);
     }
-    .download-option.downloading {
-      opacity: 0.7;
+    .modal-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      margin: 8px 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,215,0,0.1);
+      border-radius: 16px;
+      color: var(--text-bright);
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      cursor: pointer;
+      width: 100%;
+    }
+    .modal-option:hover {
+      background: var(--hover-bg);
+      border-color: var(--gold-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(255,215,0,0.2);
+    }
+    .modal-option img {
+      width: 28px;
+      height: 28px;
+      filter: brightness(0) invert(0.9);
+    }
+    .modal-option span {
+      flex: 1;
+      text-align: left;
+      font-weight: 500;
+    }
+    .modal-option.downloading {
+      opacity: 0.6;
       pointer-events: none;
       cursor: wait;
     }
+    /* Sembunyikan dropdown lama */
+    .download-dropdown {
+      display: none !important;
+    }
 
+    /* Rack header */
     .rack-header {
       padding: 20px 24px; border-bottom: 1px solid rgba(255,215,0,0.15);
       display: flex; align-items: center; justify-content: space-between;
@@ -410,10 +477,14 @@
     }
     .header-logo img { height: 28px; filter: brightness(0) invert(0.7); }
 
+    /* Playlist scroll */
     .playlist-scroll {
-      flex: 1; overflow-y: auto; padding: 12px 8px;
-      scrollbar-width: thin; scrollbar-color: var(--gold-primary) transparent;
-      max-height: 400px;
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 12px 8px;
+      scrollbar-width: thin; 
+      scrollbar-color: var(--gold-primary) transparent;
+      max-height: 400px; /* nanti di desktop diubah */
     }
     .playlist-scroll::-webkit-scrollbar { width: 5px; }
     .playlist-scroll::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 10px; }
@@ -433,7 +504,11 @@
       transition: var(--transition-smooth);
       margin: 2px 0;
     }
-    .track-item:hover { background: var(--hover-bg); transform: translateX(4px); }
+    .track-item:hover { 
+      background: var(--hover-bg); 
+      transform: translateX(8px) scale(1.02);
+      box-shadow: 0 4px 8px rgba(255,215,0,0.2);
+    }
     .track-item.active {
       background: var(--active-bg); border-left: 4px solid var(--gold-primary);
       box-shadow: var(--shadow-glow);
@@ -447,7 +522,7 @@
 
     /* Footer */
     .footer-essentials {
-      width: min(1200px, 96vw); display: flex; justify-content: center;
+      width: min(1400px, 96vw); display: flex; justify-content: center;
       align-items: center; padding: 16px 8px 8px; border-top: 1px solid var(--border-dim);
       color: var(--text-subtle); font-size: 0.75rem; margin-top: 4px;
       background: transparent; z-index: 5;
@@ -462,7 +537,7 @@
     }
     .logo-watermark img { height: 40px; filter: brightness(0) invert(1); }
 
-    /* ===== ROTATING NAME - MINIMALIS & STATIS ===== */
+    /* Rotating name */
     #rotating-name {
       display: inline-block;
       width: 80px;
@@ -472,48 +547,155 @@
       color: var(--gold-primary);
     }
 
-    /* Mobile responsive */
-    @media (max-width: 700px) {
-      body { padding: 12px 10px; }
+    /* ========== MEDIA QUERIES UTAMA ========== */
+
+    /* Tablet (768px - 1024px) */
+    @media (min-width: 768px) and (max-width: 1024px) {
       .master-container {
-        flex-direction: column;
-        border-radius: 24px;
+        flex-direction: row;
+        overflow: visible;
       }
       .resonance-chamber {
-        border-right: none;
-        border-bottom: 1px solid var(--border-dim);
-        padding: 24px 16px;
+        flex: 1.2;
+        border-right: 1px solid rgba(255,215,0,0.1);
+        border-bottom: none;
+        padding: 30px 24px;
       }
+      .tape-rack {
+        flex: 0.9;
+        border-left: 1px solid rgba(255,215,0,0.1);
+        border-top: none;
+      }
+      .playlist-scroll {
+        max-height: 500px;
+      }
+      .lyrics-display {
+        min-height: 200px;
+        max-height: 280px;
+      }
+    }
+
+    /* Desktop (>=1024px) */
+    @media (min-width: 1024px) {
+      .master-container {
+        flex-direction: row;
+        overflow: visible;
+        align-items: stretch; /* biar sama tinggi */
+      }
+      .resonance-chamber {
+        flex: 1.4;  /* lebih lebar untuk lirik */
+        border-right: 1px solid rgba(255,215,0,0.1);
+        border-bottom: none;
+        padding: 40px 36px;
+      }
+      .tape-rack {
+        flex: 1;    /* playlist lebih proporsional */
+        border-left: 1px solid rgba(255,215,0,0.1);
+        border-top: none;
+        display: flex;
+        flex-direction: column;
+      }
+      .playlist-scroll {
+        max-height: none;        /* hilangkan batasan tetap */
+        flex: 1;                 /* isi sisa tinggi tape-rack */
+        height: 100%;            /* memaksa mengikuti induk */
+      }
+      .rack-header {
+        flex-shrink: 0;
+      }
+      /* Perbesar area lirik */
+      .lyrics-display {
+        min-height: 240px;
+        max-height: 350px;
+        font-size: 1rem;
+      }
+      /* Kontrol lebih lega */
+      .controls-wrapper {
+        padding: 26px 30px;
+      }
+      .btn-core:hover {
+        transform: scale(1.2) translateY(-3px);
+      }
+      .play-pause-circle {
+        width: 72px;
+        height: 72px;
+      }
+      .play-pause-circle img {
+        width: 38px;
+        height: 38px;
+      }
+    }
+
+    /* Desktop besar (>1400px) biar makin luas */
+    @media (min-width: 1400px) {
+      .resonance-chamber {
+        flex: 1.5;
+        padding: 48px 42px;
+      }
+      .tape-rack {
+        flex: 1.1;
+      }
+      .song-title-large {
+        font-size: 3.8rem;
+      }
+    }
+
+    /* Mobile (default sudah diatur) */
+    @media (max-width: 700px) {
+      body { padding: 12px 10px; }
+      .master-container { border-radius: 24px; }
+      .resonance-chamber { padding: 24px 16px; }
       .tape-rack { height: 300px; }
       .song-title-large { font-size: 1.8rem; }
       .controls-wrapper { padding: 16px 12px; }
-      .controls-main { gap: 4px; }
       .play-pause-circle { width: 52px; height: 52px; }
       .play-pause-circle img { width: 26px; height: 26px; }
       .btn-core { width: 36px; height: 36px; }
       .btn-core img { width: 20px; height: 20px; }
-      .volume-integrated { gap: 8px; }
-      .footer-essentials { flex-direction: column; align-items: center; }
-      
-      /* Visualizer responsif */
-      .fake-vis-container {
-        height: 40px;
-        margin: 15px auto;
-      }
+      .fake-vis-container { height: 40px; margin: 15px auto; }
       .vis-bar { width: 4px; }
-      
-      #rotating-name {
-        width: 70px;
+      #rotating-name { width: 70px; }
+      /* dropdown di mobile: sedikit digeser agar tidak keluar */
+      .download-dropdown {
+        left: auto;
+        right: 0;
+        transform: none;
+        min-width: 180px;
       }
     }
+
+    /* perbaikan kecil untuk visualizer tetap center di semua ukuran */
+    .fake-vis-container {
+      width: 100%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* pastikan container tidak motong dropdown */
+    .controls-wrapper {
+      overflow: visible !important;
+    }
+    .master-container {
+      overflow: visible !important;
+    }
   </style>
+  <!-- di sini sisipkan favicon dll seperlunya (sudah di atas) -->
 </head>
 <body>
   <!-- LOGIN SCREEN -->
-  <div class="login-screen" id="loginScreen">
-    <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="Muhaajir Logo" class="login-logo" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2245%22%20fill%3D%22%23ffd700%22%20%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2270%22%20font-size%3D%2250%22%20text-anchor%3D%22middle%22%20fill%3D%22%23000%22%3Eµ%3C%2Ftext%3E%3C%2Fsvg%3E';">
-    <div class="login-spinner"></div>
+<div class="login-screen" id="loginScreen">
+  <img src="https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png" alt="Muhaajir Logo" class="login-logo">
+  
+  <div class="login-spinner"></div>
+
+  <div style="margin-top: 40px; text-align: center; animation: fadeIn 2s ease;">
+    <img src="https://img.icons8.com/ios-glyphs/60/ffffff/headphones.png" width="24" style="opacity: 0.6; margin-bottom: 10px;">
+    <p style="font-size: 0.7rem; letter-spacing: 3px; color: var(--text-subtle); text-transform: uppercase;">
+      Use headphones for better experience
+    </p>
   </div>
+</div>
 
   <!-- PLAYER UTAMA -->
   <div class="master-container">
@@ -532,17 +714,11 @@
         </div>
         <div class="playback-status" id="playback-status">⏸️ Menjeda</div>
         
-        <!-- VISUALIZER BARS - 9 bar dengan 3 variasi gerakan + glow -->
+        <!-- VISUALIZER BARS -->
         <div class="fake-vis-container" id="visualizer-bars">
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
-          <div class="vis-bar"></div>
+          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
         </div>
 
         <div class="lyrics-display" id="lyrics-display">🎧 Pilih kaset dari rak untuk memutar suara.</div>
@@ -578,16 +754,10 @@
             <button class="btn-core" id="share-icon-btn" title="Bagikan ke WhatsApp">
               <img src="https://img.icons8.com/ios-glyphs/60/ffd700/share--v1.png" width="24" height="24" alt="Share">
             </button>
-            <!-- Tombol Download dengan dropdown -->
-            <div class="download-container">
-              <button class="btn-core" id="download-btn" title="Download">
-                <img src="https://img.icons8.com/ios-glyphs/60/ffd700/download.png" width="24" height="24" alt="Download">
-              </button>
-              <div class="download-dropdown" id="downloadDropdown">
-                <div class="download-option" id="dropbox-option" data-url="" data-filename="">Server 1 (Dropbox)</div>
-                <div class="download-option" id="gdrive-option" data-url="" data-filename="">Server 2 (Google Drive)</div>
-              </div>
-            </div>
+            <!-- Tombol Download dengan MODAL (BUKAN DROPDOWN) -->
+            <button class="btn-core" id="download-btn" title="Download">
+              <img src="https://img.icons8.com/ios-glyphs/60/ffd700/download.png" width="24" height="24" alt="Download">
+            </button>
           </div>
           <div class="volume-integrated">
             <span>VOL</span>
@@ -606,6 +776,24 @@
         </div>
       </div>
       <div class="playlist-scroll" id="playlist-inject"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DOWNLOAD (POP-UP) -->
+  <div class="modal-overlay" id="downloadModalOverlay">
+    <div class="download-modal">
+      <div class="modal-header">
+        <h3>Pilih Sumber Download</h3>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-option" id="modalDropboxOption">
+        <img src="https://img.icons8.com/fluency/48/dropbox.png" alt="Dropbox" width="28" height="28">
+        <span>Server 1 (Dropbox)</span>
+      </div>
+      <div class="modal-option" id="modalGdriveOption">
+        <img src="https://img.icons8.com/color/48/google-drive--v2.png" alt="Google Drive" width="28" height="28">
+        <span>Server 2 (Google Drive)</span>
+      </div>
     </div>
   </div>
 
@@ -628,14 +816,12 @@
     (function() {
       'use strict';
 
-      // ================== SHARE WHATSAPP ==================
       function shareToWhatsApp(songName) {
         const currentUrl = window.location.href;
         const text = `*${songName}* - Muhaajir | ${currentUrl}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
       }
 
-      // Data lagu
       const rawSongs = [
         { name: "Lintasan Tak Bermakna", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/42d6gtx7f7tocie3whf2h/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Lintasan-20Tak-20Bermakna.mp3?rlkey=9bim2pumtfjcwmrhq9127fnpd&st=6e9nrwwe&raw=1", gdId: "1_Dn7CsNUNkECXotJYZcofSV90--d0mbg" },
         { name: "Padahal Sudah Bilang", group: "Fragmen Suara", url: "https://www.dropbox.com/scl/fi/30o3te9g5k0mparg46ugd/primary-3ADownload-2Fmuhaajir-2Fmusic-2FMuhaajir-20-20Padahal-20Sudah-20Bilang.mp3?rlkey=iz0oliiy3ddlzh4m84jw1oacb&st=coy2ftp3&raw=1", gdId: "1xDIhBggeN2hbveqyMWE5Q6wCOqxllboP" },
@@ -668,7 +854,6 @@
       };
       const defaultLyrics = "🎵 Lirik menyusul. Nikmati instrumen.";
 
-      // Elemen DOM
       const audio = document.getElementById('audio-engine');
       const playBtn = document.getElementById('play-trigger');
       const playImg = document.getElementById('play-img');
@@ -687,17 +872,13 @@
       const nextBtn = document.getElementById('next-btn');
       const volSlider = document.getElementById('vol-slider');
       const progRoot = document.getElementById('prog-root');
-      
-      // Elemen download
       const downloadBtn = document.getElementById('download-btn');
-      const downloadDropdown = document.getElementById('downloadDropdown');
-      const dropboxOption = document.getElementById('dropbox-option');
-      const gdriveOption = document.getElementById('gdrive-option');
-
-      // Elemen visualizer
+      const modalOverlay = document.getElementById('downloadModalOverlay');
+      const modalClose = document.getElementById('modalCloseBtn');
+      const modalDropbox = document.getElementById('modalDropboxOption');
+      const modalGdrive = document.getElementById('modalGdriveOption');
       const visualizerBars = document.getElementById('visualizer-bars');
 
-      // State
       let currentIndex = 0;
       let isShuffle = false;
       let isRepeat = false;
@@ -705,13 +886,30 @@
       let loginHidden = false;
       let fadeInterval = null;
 
-      audio.volume = 0.7;
+      // === FITUR SAVE VOLUME KE LOCALSTORAGE ===
+      function loadVolumeFromStorage() {
+        const savedVol = localStorage.getItem('muhaajir_volume');
+        if (savedVol !== null) {
+          const vol = parseFloat(savedVol);
+          if (!isNaN(vol) && vol >= 0 && vol <= 1) {
+            audio.volume = vol;
+            volSlider.value = vol;
+          }
+        }
+      }
+      function saveVolumeToStorage(vol) {
+        localStorage.setItem('muhaajir_volume', vol.toString());
+      }
+      volSlider.addEventListener('input', (e) => {
+        const vol = parseFloat(e.target.value);
+        audio.volume = vol;
+        saveVolumeToStorage(vol);
+      });
+      // Panggil saat awal
+      loadVolumeFromStorage();
 
-      // Fungsi pembersih lirik
       function cleanLyrics(text) {
-        return text.replace(/[^\x20-\x7E\n\t]/g, '')
-                   .replace(/[ ]{2,}/g, ' ')
-                   .trim();
+        return text.replace(/[^\x20-\x7E\n\t]/g, '').replace(/[ ]{2,}/g, ' ').trim();
       }
 
       function updateAccentByGroup(group) {
@@ -727,21 +925,17 @@
         return `${m}:${s.toString().padStart(2, '0')}`;
       }
 
-      // ========== FUNGSI DOWNLOAD AMAN ==========
       async function safeDownload(url, filename, optionElement) {
-        if (!url) {
-          alert('URL download tidak tersedia.');
-          return;
+        if (!url) { alert('URL download tidak tersedia.'); return; }
+        if (optionElement) {
+          optionElement.classList.add('downloading');
+          // Simpan teks asli
+          const originalText = optionElement.querySelector('span')?.innerText || optionElement.innerText;
+          optionElement.style.opacity = '0.7';
         }
-
-        if (optionElement) optionElement.classList.add('downloading');
-
         try {
-          const response = await fetch(url, {
-            mode: 'cors',
-            headers: { 'Content-Type': 'audio/mpeg' }
-          });
-          if (!response.ok) throw new Error('Gagal mengunduh');
+          const response = await fetch(url, { mode: 'cors', headers: { 'Content-Type': 'audio/mpeg' } });
+          if (!response.ok) throw new Error('Network response was not ok');
           const blob = await response.blob();
           const objectUrl = URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -752,145 +946,124 @@
           document.body.removeChild(link);
           URL.revokeObjectURL(objectUrl);
         } catch (error) {
-          console.warn('Fetch gagal, fallback buka tab baru:', error);
+          console.error('Download gagal:', error);
           window.open(url, '_blank');
         } finally {
-          if (optionElement) optionElement.classList.remove('downloading');
+          if (optionElement) {
+            optionElement.classList.remove('downloading');
+            optionElement.style.opacity = '1';
+          }
         }
       }
 
-      // Fungsi untuk memperbarui data-url dan data-filename pada opsi download
       function updateDownloadOptions(song) {
         if (!song) return;
-
-        let safeName = song.name.replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ');
+        let safeName = song.name.replace(/[^\w\s-]/g, '').replace(/\s+/g, ' ').trim();
         let filename = safeName + ' - Muhaajir.mp3';
-
-        // Dropbox: ubah raw=1 menjadi dl=1
         let dropboxUrl = song.url ? song.url.replace('raw=1', 'dl=1') : '';
-        dropboxOption.dataset.url = dropboxUrl;
-        dropboxOption.dataset.filename = filename;
-
         let gdriveUrl = song.gdId ? `https://drive.google.com/uc?export=download&id=${song.gdId}` : '';
-        gdriveOption.dataset.url = gdriveUrl;
-        gdriveOption.dataset.filename = filename;
+
+        // Simpan data ke elemen modal
+        modalDropbox.dataset.url = dropboxUrl;
+        modalDropbox.dataset.filename = filename;
+        modalGdrive.dataset.url = gdriveUrl;
+        modalGdrive.dataset.filename = filename;
       }
 
-      // Event listener untuk opsi download
-      downloadDropdown.addEventListener('click', (e) => {
-        const option = e.target.closest('.download-option');
-        if (!option) return;
-        const url = option.dataset.url;
-        const filename = option.dataset.filename;
+      // Event listener untuk modal
+      modalDropbox.addEventListener('click', (e) => {
+        const url = modalDropbox.dataset.url;
+        const filename = modalDropbox.dataset.filename;
         if (url && filename) {
-          safeDownload(url, filename, option);
+          safeDownload(url, filename, modalDropbox);
         } else {
-          alert('URL download tidak valid.');
+          alert('URL Dropbox tidak tersedia.');
+        }
+      });
+      modalGdrive.addEventListener('click', (e) => {
+        const url = modalGdrive.dataset.url;
+        const filename = modalGdrive.dataset.filename;
+        if (url && filename) {
+          safeDownload(url, filename, modalGdrive);
+        } else {
+          alert('URL Google Drive tidak tersedia.');
         }
       });
 
-      // ========== FUNGSI FADE IN / FADE OUT ==========
+      // Buka/tutup modal
+      downloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalOverlay.classList.add('show');
+      });
+      function closeModal() {
+        modalOverlay.classList.remove('show');
+      }
+      modalClose.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+
       function smoothPause() {
         if (fadeInterval) clearInterval(fadeInterval);
-        
         fadeInterval = setInterval(() => {
-          // Jika volume masih lebih besar dari 0.02, kurangi terus
-          if (audio.volume > 0.02) {
-            audio.volume = Math.max(0, audio.volume - 0.05);
-          } else {
-            // Jika sudah hampir habis, baru benar-benar pause
-            audio.pause();
-            audio.volume = 1; // Kembalikan ke volume normal buat pas Play lagi
-            clearInterval(fadeInterval);
-            fadeInterval = null;
-            
-            // Hentikan animasi visualizer juga di sini
+          if (audio.volume > 0.02) { audio.volume = Math.max(0, audio.volume - 0.05); }
+          else {
+            audio.pause(); 
+            // Kembalikan volume ke nilai sebelum fade (dari slider)
+            audio.volume = parseFloat(volSlider.value);
+            clearInterval(fadeInterval); fadeInterval = null;
             if (visualizerBars) visualizerBars.classList.remove('active');
             playImg.src = 'https://img.icons8.com/ios-glyphs/90/0a0a0a/play--v1.png';
             playbackStatus.textContent = '⏸️ Menjeda';
           }
-        }, 50); // Kecepatan pergerakan volume (50ms)
+        }, 50);
       }
 
       function smoothPlay() {
         if (fadeInterval) clearInterval(fadeInterval);
-        
-        audio.volume = 0; // Mulai dari nol
+        // Simpan volume target dari slider
+        const targetVol = parseFloat(volSlider.value);
+        audio.volume = 0; 
         audio.play();
         if (visualizerBars) visualizerBars.classList.add('active');
         playImg.src = 'https://img.icons8.com/ios-glyphs/90/0a0a0a/pause--v1.png';
         playbackStatus.textContent = '▶️ Memutar...';
-
         fadeInterval = setInterval(() => {
-          if (audio.volume < 0.95) {
-            audio.volume = Math.min(1, audio.volume + 0.05);
-          } else {
-            audio.volume = 1;
-            clearInterval(fadeInterval);
-            fadeInterval = null;
+          if (audio.volume < targetVol - 0.02) { 
+            audio.volume = Math.min(targetVol, audio.volume + 0.05); 
+          } else { 
+            audio.volume = targetVol; 
+            clearInterval(fadeInterval); fadeInterval = null; 
           }
         }, 50);
       }
 
-      // ========== LOAD SONG ==========
       function loadSong(index, skipPlay = false) {
-        const song = rawSongs[index];
-        if (!song) return;
-
+        const song = rawSongs[index]; if (!song) return;
         updateAccentByGroup(song.group);
         displayTitle.textContent = song.name;
         displayAlbum.textContent = song.group;
         updateLyrics();
         updateDownloadOptions(song);
-
-        // Hapus event error sebelumnya
         audio.removeEventListener('error', handleAudioError);
-        
-        // Set sumber audio
-        audio.src = song.url;
-        audio.load();
-
+        audio.src = song.url; audio.load();
         let fallbackTried = false;
-
         function handleAudioError(e) {
-          if (fallbackTried) {
-            playbackStatus.textContent = '❌ Gagal memuat lagu';
-            return;
-          }
-          fallbackTried = true;
-          console.warn('Dropbox error, mencoba Google Drive...');
+          if (fallbackTried) { playbackStatus.textContent = '❌ Gagal memuat lagu'; return; }
+          fallbackTried = true; console.warn('Dropbox error, mencoba Google Drive...');
           if (song.gdId) {
-            audio.src = `https://drive.google.com/uc?export=download&id=${song.gdId}`;
-            audio.load();
-            if (!skipPlay && isUserInteracted) {
-              audio.play().catch(err => {
-                playbackStatus.textContent = '❌ Gagal memuat lagu';
-              });
-            }
-          } else {
-            playbackStatus.textContent = '❌ Gagal memuat lagu';
-          }
+            audio.src = `https://drive.google.com/uc?export=download&id=${song.gdId}`; audio.load();
+            if (!skipPlay && isUserInteracted) audio.play().catch(err => playbackStatus.textContent = '❌ Gagal memuat lagu');
+          } else playbackStatus.textContent = '❌ Gagal memuat lagu';
         }
-
         audio.addEventListener('error', handleAudioError);
-
-        if (!skipPlay && isUserInteracted) {
-          smoothPlay();
-        }
-
-        // Update active item di playlist
+        if (!skipPlay && isUserInteracted) smoothPlay();
         document.querySelectorAll('.track-item').forEach(el => el.classList.remove('active'));
         const activeItem = document.querySelector(`.track-item[data-index="${index}"]`);
-        if (activeItem) {
-          activeItem.classList.add('active');
-          activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
+        if (activeItem) { activeItem.classList.add('active'); activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
         if ('mediaSession' in navigator) {
           navigator.mediaSession.metadata = new MediaMetadata({
-            title: song.name,
-            artist: 'Muhaajir',
-            album: song.group,
+            title: song.name, artist: 'Muhaajir', album: song.group,
             artwork: [{ src: 'https://i.postimg.cc/Kvg50f5n/IMG-20250812-164118-putih.png', sizes: '512x512', type: 'image/png' }]
           });
         }
@@ -906,11 +1079,8 @@
           const lines = cleaned.split('\n');
           let html = '';
           lines.forEach(line => {
-            if (line.trim() === '') {
-              html += '<div class="lyric-paragraph-space"></div>';
-            } else {
-              html += `<span class="lyric-line">${line}</span>`;
-            }
+            if (line.trim() === '') html += '<div class="lyric-paragraph-space"></div>';
+            else html += `<span class="lyric-line">${line}</span>`;
           });
           lyricsDiv.innerHTML = html;
           lyricsDiv.scrollTop = 0;
@@ -926,50 +1096,26 @@
         rawSongs.forEach((s, i) => {
           if (s.group !== lastGroup) {
             lastGroup = s.group;
-            const lbl = document.createElement('div');
-            lbl.className = 'group-label';
-            lbl.innerText = s.group;
+            const lbl = document.createElement('div'); lbl.className = 'group-label'; lbl.innerText = s.group;
             container.appendChild(lbl);
           }
           const item = document.createElement('div');
-          item.className = 'track-item';
-          item.setAttribute('data-index', i);
+          item.className = 'track-item'; item.setAttribute('data-index', i);
           item.innerHTML = `<span class="t-num">${i+1}</span><span class="t-name">${s.name}</span>`;
-          item.addEventListener('click', () => {
-            isUserInteracted = true;
-            currentIndex = i;
-            loadSong(currentIndex, false);
-          });
+          item.addEventListener('click', () => { isUserInteracted = true; currentIndex = i; loadSong(currentIndex, false); });
           container.appendChild(item);
         });
         const active = document.querySelector(`.track-item[data-index="${currentIndex}"]`);
         if (active) active.classList.add('active');
       }
 
-      // ================== EVENT LISTENERS & LOGIC ==================
-
       function handlePlayPause() {
         isUserInteracted = true;
-        
-        if (audio.paused) {
-          smoothPlay();
-        } else {
-          smoothPause();
-        }
+        if (audio.paused) smoothPlay(); else smoothPause();
       }
 
       playBtn.addEventListener('click', handlePlayPause);
-
-      // Event listeners untuk audio (native events tetap digunakan untuk sinkronisasi)
-      audio.addEventListener('ended', () => {
-        if (isRepeat) {
-          audio.currentTime = 0;
-          smoothPlay();
-        } else {
-          nextBtn.click();
-        }
-      });
-
+      audio.addEventListener('ended', () => { if (isRepeat) { audio.currentTime = 0; smoothPlay(); } else nextBtn.click(); });
       audio.addEventListener('timeupdate', () => {
         if (audio.duration) {
           const percent = (audio.currentTime / audio.duration) * 100;
@@ -978,106 +1124,46 @@
           timeEnd.textContent = formatTime(audio.duration);
         }
       });
-
       progRoot.addEventListener('click', (e) => {
         isUserInteracted = true;
         const rect = progRoot.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const width = rect.width;
-        const seekTime = (clickX / width) * audio.duration;
-        audio.currentTime = seekTime;
+        audio.currentTime = (clickX / width) * audio.duration;
       });
-
-      volSlider.addEventListener('input', (e) => {
-        audio.volume = e.target.value;
-      });
-
       prevBtn.addEventListener('click', () => {
         isUserInteracted = true;
-        if (isShuffle) {
-          let rand;
-          do { rand = Math.floor(Math.random() * rawSongs.length); } while (rand === currentIndex && rawSongs.length > 1);
-          currentIndex = rand;
-        } else {
-          currentIndex = (currentIndex - 1 + rawSongs.length) % rawSongs.length;
-        }
+        if (isShuffle) { let rand; do { rand = Math.floor(Math.random() * rawSongs.length); } while (rand === currentIndex && rawSongs.length > 1); currentIndex = rand; }
+        else currentIndex = (currentIndex - 1 + rawSongs.length) % rawSongs.length;
         loadSong(currentIndex, false);
       });
-
       nextBtn.addEventListener('click', () => {
         isUserInteracted = true;
-        if (isShuffle) {
-          let rand;
-          do { rand = Math.floor(Math.random() * rawSongs.length); } while (rand === currentIndex && rawSongs.length > 1);
-          currentIndex = rand;
-        } else {
-          currentIndex = (currentIndex + 1) % rawSongs.length;
-        }
+        if (isShuffle) { let rand; do { rand = Math.floor(Math.random() * rawSongs.length); } while (rand === currentIndex && rawSongs.length > 1); currentIndex = rand; }
+        else currentIndex = (currentIndex + 1) % rawSongs.length;
         loadSong(currentIndex, false);
       });
+      shuffleBtn.addEventListener('click', () => { isShuffle = !isShuffle; shuffleBtn.classList.toggle('active', isShuffle); });
+      repeatBtn.addEventListener('click', () => { isRepeat = !isRepeat; repeatBtn.classList.toggle('active', isRepeat); });
+      shareIconBtn.addEventListener('click', () => { const song = rawSongs[currentIndex]; if (song) shareToWhatsApp(song.name); });
 
-      shuffleBtn.addEventListener('click', () => {
-        isShuffle = !isShuffle;
-        shuffleBtn.classList.toggle('active', isShuffle);
-      });
-
-      repeatBtn.addEventListener('click', () => {
-        isRepeat = !isRepeat;
-        repeatBtn.classList.toggle('active', isRepeat);
-      });
-
-      shareIconBtn.addEventListener('click', () => {
-        const song = rawSongs[currentIndex];
-        if (song) shareToWhatsApp(song.name);
-      });
-
-      downloadBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        downloadDropdown.classList.toggle('show');
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!downloadBtn.contains(e.target) && !downloadDropdown.contains(e.target)) {
-          downloadDropdown.classList.remove('show');
-        }
-      });
-
-      // ===== ROTATING NAME DENGAN TRANSISI HALUS =====
       const names = ["Muhaajir", "Regina", "Suni", "Brava", "Niva", "Hajir"];
-      let nameIdx = 0;
-      const rotEl = document.getElementById('rotating-name');
-
+      let nameIdx = 0; const rotEl = document.getElementById('rotating-name');
       setInterval(() => {
-        // 1. Pudarkan dulu
         rotEl.style.opacity = 0;
-        
-        setTimeout(() => {
-          // 2. Ganti nama pas gak kelihatan
-          nameIdx = (nameIdx + 1) % names.length;
-          rotEl.textContent = names[nameIdx];
-          
-          // 3. Munculkan lagi
-          rotEl.style.opacity = 1;
-        }, 400); // Jeda pudar (sesuaikan dengan transition CSS)
-      }, 2500); // Ganti nama setiap 2.5 detik
+        setTimeout(() => { nameIdx = (nameIdx + 1) % names.length; rotEl.textContent = names[nameIdx]; rotEl.style.opacity = 1; }, 400);
+      }, 2500);
 
-      // FUNGSI HAPUS LOGIN SCREEN
       function hideLogin() {
         if (!loginHidden) {
           loginHidden = true;
           const login = document.getElementById('loginScreen');
-          if (login) {
-            login.classList.add('hidden');
-            setTimeout(() => login.remove(), 700);
-          }
+          if (login) { login.classList.add('hidden'); setTimeout(() => login.remove(), 700); }
         }
       }
-
-      // Trigger login hilang: canplay (audio siap) ATAU timeout (jika koneksi lambat)
       audio.addEventListener('canplay', hideLogin, { once: true });
-      setTimeout(hideLogin, 5000); // Fail-safe 5 detik kalau audio gagal load
+      setTimeout(hideLogin, 5000);
 
-      // Inisialisasi awal
       window.addEventListener('load', () => {
         renderPlaylist();
         const firstSong = rawSongs[0];
